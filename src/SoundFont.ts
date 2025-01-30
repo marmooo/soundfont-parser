@@ -193,7 +193,7 @@ export function convertTime(value: number) {
 
 function removeUndefined<T>(obj: T) {
   const result: Partial<T> = {};
-  for (let key in obj) {
+  for (const key in obj) {
     if (obj[key] !== undefined) {
       result[key] = obj[key];
     }
@@ -206,7 +206,7 @@ export interface NoteInfo {
   sampleRate: number;
   sampleName: string;
   sampleModes: number;
-  playbackRate: Function;
+  playbackRate: (key: number) => number;
   modEnvToPitch: number;
   scaleTuning: number;
   start: number;

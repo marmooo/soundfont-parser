@@ -8,13 +8,11 @@ export default class Stream {
   }
 
   readString(size: number): string {
-    const str = String.fromCharCode.apply(
-      null,
-      this.data.subarray(this.ip, this.ip += size),
-    );
+    const subArray = this.data.subarray(this.ip, this.ip += size);
+    const str = String.fromCharCode(...Array.from(subArray));
     const nullLocation = str.indexOf("\u0000");
     if (nullLocation > 0) {
-      return str.substr(0, nullLocation);
+      return str.substring(0, nullLocation);
     }
     return str;
   }
