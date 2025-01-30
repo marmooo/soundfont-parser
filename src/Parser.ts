@@ -1,4 +1,8 @@
-import { Chunk, Options as RiffParserOptions, parseRiff } from "./RiffParser";
+import {
+  Chunk,
+  Options as RiffParserOptions,
+  parseRiff,
+} from "./RiffParser.ts";
 import {
   GeneratorList,
   Info,
@@ -8,8 +12,8 @@ import {
   PresetBag,
   PresetHeader,
   SampleHeader,
-} from "./Structs";
-import Stream from "./Stream";
+} from "./Structs.ts";
+import Stream from "./Stream.ts";
 
 export interface ParseResult {
   presetHeaders: PresetHeader[];

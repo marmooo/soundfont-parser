@@ -1,4 +1,4 @@
-import { ParseResult } from "./Parser";
+import { ParseResult } from "./Parser.ts";
 
 function arrayRange(start: number, end: number) {
   return Array.from({ length: end - start }, (_, k) => k + start);

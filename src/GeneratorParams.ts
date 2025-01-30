@@ -1,5 +1,5 @@
-import { GeneratorEnumeratorTable } from "./Constants";
-import { GeneratorList, RangeValue } from "./Structs";
+import { GeneratorEnumeratorTable } from "./Constants.ts";
+import { GeneratorList, RangeValue } from "./Structs.ts";
 
 type TupleToUnion<T extends readonly any[]> = T[number];
 

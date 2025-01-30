@@ -2,15 +2,15 @@ import {
   createGeneraterObject,
   defaultInstrumentZone,
   GeneratorParams,
-} from "./GeneratorParams";
-import { ParseResult } from "./Parser";
+} from "./GeneratorParams.ts";
+import { ParseResult } from "./Parser.ts";
 import {
   getInstrumentGenerators,
   getInstrumentZone,
   getInstrumentZoneIndexes,
-} from "./getInstrumentGenerators";
-import { RangeValue } from "./Structs";
-import { getPresetGenerators } from "./getPresetGenerators";
+} from "./getInstrumentGenerators.ts";
+import { RangeValue } from "./Structs.ts";
+import { getPresetGenerators } from "./getPresetGenerators.ts";
 
 /**
  * Parser で読み込んだサウンドフォントのデータを

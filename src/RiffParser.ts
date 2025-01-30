@@ -1,4 +1,4 @@
-import Stream from "./Stream";
+import Stream from "./Stream.ts";
 
 function parseChunk(input: Uint8Array, ip: number, bigEndian: boolean): Chunk {
   const stream = new Stream(input, ip);

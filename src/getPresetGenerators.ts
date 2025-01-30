@@ -1,5 +1,5 @@
-import { ParseResult } from "./Parser";
-import { GeneratorList } from "./Structs";
+import { ParseResult } from "./Parser.ts";
+import { GeneratorList } from "./Structs.ts";
 
 export function getPresetGenerators(
   parsed: ParseResult,

@@ -1,6 +1,6 @@
-import { GeneratorEnumeratorTable } from "./Constants";
-import Stream from "./Stream";
-import { Chunk } from "./RiffParser";
+import { GeneratorEnumeratorTable } from "./Constants.ts";
+import Stream from "./Stream.ts";
+import { Chunk } from "./RiffParser.ts";
 
 export class VersionTag {
   major: number;
