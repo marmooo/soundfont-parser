@@ -1,24 +1,26 @@
-import { GeneratorEnumeratorTable } from "./Constants"
-import { GeneratorList, RangeValue } from "./Structs"
+import { GeneratorEnumeratorTable } from "./Constants";
+import { GeneratorList, RangeValue } from "./Structs";
 
-type TupleToUnion<T extends readonly any[]> = T[number]
+type TupleToUnion<T extends readonly any[]> = T[number];
 
 export type GeneratorParams = {
-  [key in Exclude<
-    TupleToUnion<typeof GeneratorEnumeratorTable>,
-    undefined
-  >]: any
-}
+  [
+    key in Exclude<
+      TupleToUnion<typeof GeneratorEnumeratorTable>,
+      undefined
+    >
+  ]: any;
+};
 
 export function createGeneraterObject(generators: GeneratorList[]) {
-  const result: Partial<GeneratorParams> = {}
+  const result: Partial<GeneratorParams> = {};
   for (const gen of generators) {
-    const type = gen.type
+    const type = gen.type;
     if (type !== undefined) {
-      result[type] = gen.value
+      result[type] = gen.value;
     }
   }
-  return result
+  return result;
 }
 
 export const defaultInstrumentZone: GeneratorParams = {
@@ -74,4 +76,4 @@ export const defaultInstrumentZone: GeneratorParams = {
   initialFilterFc: 13500,
   sampleModes: 0,
   pan: undefined,
-}
+};

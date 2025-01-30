@@ -1,17 +1,18 @@
 # sf2synth.js
 
-sf2synth.js は [WebMidiLink](http://www.g200kg.com/en/docs/webmidilink/) 対応の SoundFont シンセサイザです。
+sf2synth.js は [WebMidiLink](http://www.g200kg.com/en/docs/webmidilink/) 対応の
+SoundFont シンセサイザです。
 
 ## 使い方
 
 ```js
 var url =
-  "//cdn.rawgit.com/logue/smfplayer.js/gh-pages/Yamaha%20XG%20Sound%20Set.sf2"
-var wml = new SoundFont.WebMidiLink()
+  "//cdn.rawgit.com/logue/smfplayer.js/gh-pages/Yamaha%20XG%20Sound%20Set.sf2";
+var wml = new SoundFont.WebMidiLink();
 wml.setLoadCallback(function (arraybuffer) {
   // ロード完了時の処理
-})
-wml.setup(url)
+});
+wml.setup(url);
 ```
 
 ## テスト方法
@@ -37,5 +38,4 @@ sf2synth.js は WebMidiLink の Link Level 1 に対応しています。
 
 ## ライセンス
 
-Copyright &copy; 2013 imaya / GREE Inc.
-Licensed under the MIT License.
+Copyright &copy; 2013 imaya / GREE Inc. Licensed under the MIT License.

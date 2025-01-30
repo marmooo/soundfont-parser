@@ -1,5 +1,5 @@
-import base from "../../jest.config.js"
+import base from "../../jest.config.js";
 
 export default {
   ...base,
-}
+};
