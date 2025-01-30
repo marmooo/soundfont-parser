@@ -1,45 +1,43 @@
-import fs from "fs";
 import { parse } from "./Parser.ts";
+import { assertEquals } from "jsr:@std/assert";
 
-describe("Parser", () => {
-  const input = fs.readFileSync("./fixture/TestSoundFont.sf2");
-  const parser = parse(input);
+const input = Deno.readFileSync("./fixture/TestSoundFont.sf2");
+const parser = parse(input);
 
-  it("should parse INFO", () => {
-    expect(parser.info.comment).toBe("This is comment");
-    expect(parser.info.copyright).toBe("Public Domain");
-    expect(parser.info.creationDate).toBe("Nov 28, 2017");
-    expect(parser.info.engineer).toBe("ryohey");
-    expect(parser.info.name).toBe("TestSoundFont");
-    expect(parser.info.product).toBe("PRDCT");
-    expect(parser.info.software).toBe("Polyphone");
-    expect(parser.info.soundEngine).toBe("EMU8000");
-    expect(parser.info.version.major).toBe(2);
-    expect(parser.info.version.minor).toBe(0);
+Deno.test("should parse INFO", () => {
+  assertEquals(parser.info.comment, "This is comment");
+  assertEquals(parser.info.copyright, "Public Domain");
+  assertEquals(parser.info.creationDate, "Nov 28, 2017");
+  assertEquals(parser.info.engineer, "ryohey");
+  assertEquals(parser.info.name, "TestSoundFont");
+  assertEquals(parser.info.product, "PRDCT");
+  assertEquals(parser.info.software, "Polyphone");
+  assertEquals(parser.info.soundEngine, "EMU8000");
+  assertEquals(parser.info.version.major, 2);
+  assertEquals(parser.info.version.minor, 0);
 
-    // FIXME: I don't know how to set these values to the soundfont
-    // expect(parser.info.romName).toBe("")
-    // expect(parser.info.romVersion).toBe("0.00")
-  });
+  // FIXME: I don't know how to set these values to the soundfont
+  // assertEquals(parser.info.romName, "");
+  // assertEquals(parser.info.romVersion, "0.00");
+});
 
-  it("should parse instruments", () => {
-    expect(parser.instruments.length).toBe(2);
-    expect(parser.instruments[0].instrumentName).toBe("tr909");
-    expect(parser.instruments[1].instrumentName).toBe("tr909-mod");
-  });
+Deno.test("should parse instruments", () => {
+  assertEquals(parser.instruments.length, 2);
+  assertEquals(parser.instruments[0].instrumentName, "tr909");
+  assertEquals(parser.instruments[1].instrumentName, "tr909-mod");
+});
 
-  it("should parse samples", () => {
-    expect(parser.samples.length).toBe(5);
-    expect(parser.sampleHeaders.length).toBe(5);
-    expect(parser.sampleHeaders[0].sampleName).toBe("bassdrum1");
-    expect(parser.sampleHeaders[0].sampleRate).toBe(44100);
-    expect(parser.sampleHeaders[0].originalPitch).toBe(76);
-    expect(parser.sampleHeaders[0].pitchCorrection).toBe(6);
-  });
+Deno.test("should parse samples", () => {
+  assertEquals(parser.samples.length, 5);
+  assertEquals(parser.sampleHeaders.length, 5);
+  assertEquals(parser.sampleHeaders[0].sampleName, "bassdrum1");
+  assertEquals(parser.sampleHeaders[0].sampleRate, 44100);
+  assertEquals(parser.sampleHeaders[0].originalPitch, 76);
+  assertEquals(parser.sampleHeaders[0].pitchCorrection, 6);
+});
 
-  it("should parse presets", () => {
-    expect(parser.presetHeaders.length).toBe(2);
-    expect(parser.presetHeaders[0].presetName).toBe("tr909");
-    expect(parser.presetHeaders[1].presetName).toBe("tr909-mod");
-  });
+Deno.test("should parse presets", () => {
+  assertEquals(parser.presetHeaders.length, 2);
+  assertEquals(parser.presetHeaders[0].presetName, "tr909");
+  assertEquals(parser.presetHeaders[1].presetName, "tr909-mod");
 });
