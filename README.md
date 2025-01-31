@@ -1,4 +1,4 @@
-# soundfont-parser
+# @marmooo/soundfont-parser
 
 A SoundFont (SF2, SF3) parser.
 
