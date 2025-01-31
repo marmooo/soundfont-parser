@@ -3,8 +3,8 @@ import Stream from "./Stream.ts";
 import { Chunk } from "./RiffParser.ts";
 
 export class VersionTag {
-  major: number;
-  minor: number;
+  major!: number;
+  minor!: number;
 
   static parse(stream: Stream) {
     const v = new VersionTag();
@@ -15,17 +15,17 @@ export class VersionTag {
 }
 
 export class Info {
-  comment: string | null;
-  copyright: string | null;
-  creationDate: string | null;
-  engineer: string | null;
-  name: string;
-  product: string | null;
-  software: string | null;
-  version: VersionTag;
-  soundEngine: string | null;
-  romName: string | null;
-  romVersion: VersionTag | null;
+  comment!: string | null;
+  copyright!: string | null;
+  creationDate!: string | null;
+  engineer!: string | null;
+  name!: string;
+  product!: string | null;
+  software!: string | null;
+  version!: VersionTag;
+  soundEngine!: string | null;
+  romName!: string | null;
+  romVersion!: VersionTag | null;
 
   // LIST - INFO の全ての chunk
   static parse(data: Uint8Array, chunks: Chunk[]) {
@@ -70,13 +70,13 @@ export class Info {
 }
 
 export class PresetHeader {
-  presetName: string;
-  preset: number;
-  bank: number;
-  presetBagIndex: number;
-  library: number;
-  genre: number;
-  morphology: number;
+  presetName!: string;
+  preset!: number;
+  bank!: number;
+  presetBagIndex!: number;
+  library!: number;
+  genre!: number;
+  morphology!: number;
 
   get isEnd() {
     return this.presetName === "EOP";
@@ -96,8 +96,8 @@ export class PresetHeader {
 }
 
 export class PresetBag {
-  presetGeneratorIndex: number;
-  presetModulatorIndex: number;
+  presetGeneratorIndex!: number;
+  presetModulatorIndex!: number;
 
   static parse(stream: Stream) {
     const p = new PresetBag();
@@ -122,11 +122,11 @@ export class RangeValue {
 }
 
 export class ModulatorList {
-  sourceOper: number;
-  destinationOper: number;
-  value: number | RangeValue;
-  amountSourceOper: number;
-  transOper: number;
+  sourceOper!: number;
+  destinationOper!: number;
+  value!: number | RangeValue;
+  amountSourceOper!: number;
+  transOper!: number;
 
   get type() {
     return GeneratorEnumeratorTable[this.destinationOper];
@@ -168,8 +168,8 @@ export class ModulatorList {
 }
 
 export class GeneratorList {
-  code: number;
-  value: number | RangeValue;
+  code!: number;
+  value!: number | RangeValue;
 
   get type() {
     return GeneratorEnumeratorTable[this.code];
@@ -200,8 +200,8 @@ export class GeneratorList {
 }
 
 export class Instrument {
-  instrumentName: string;
-  instrumentBagIndex: number;
+  instrumentName!: string;
+  instrumentBagIndex!: number;
 
   get isEnd() {
     return this.instrumentName === "EOI";
@@ -216,8 +216,8 @@ export class Instrument {
 }
 
 export class InstrumentBag {
-  instrumentGeneratorIndex: number;
-  instrumentModulatorIndex: number;
+  instrumentGeneratorIndex!: number;
+  instrumentModulatorIndex!: number;
 
   static parse(stream: Stream) {
     const t = new InstrumentBag();
@@ -228,16 +228,16 @@ export class InstrumentBag {
 }
 
 export class SampleHeader {
-  sampleName: string;
-  start: number;
-  end: number;
-  loopStart: number;
-  loopEnd: number;
-  sampleRate: number;
-  originalPitch: number;
-  pitchCorrection: number;
-  sampleLink: number;
-  sampleType: number;
+  sampleName!: string;
+  start!: number;
+  end!: number;
+  loopStart!: number;
+  loopEnd!: number;
+  sampleRate!: number;
+  originalPitch!: number;
+  pitchCorrection!: number;
+  sampleLink!: number;
+  sampleType!: number;
 
   get isEnd() {
     return this.sampleName === "EOS";
