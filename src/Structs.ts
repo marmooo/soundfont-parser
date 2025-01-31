@@ -62,7 +62,7 @@ export class Info {
     info.product = readString("IPRD");
     info.software = readString("ISFT");
     info.version = readVersionTag("ifil")!;
-    info.soundEngine = readString("isng");
+    info.soundEngine = readString("isng")!;
     info.romName = readString("irom");
     info.romVersion = readVersionTag("iver");
     return info;
