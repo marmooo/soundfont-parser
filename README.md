@@ -1,41 +1,30 @@
-# sf2synth.js
+# soundfont-parser
 
-sf2synth.js は [WebMidiLink](http://www.g200kg.com/en/docs/webmidilink/) 対応の
-SoundFont シンセサイザです。
+A SoundFont (SF2, SF3) parser.
 
-## 使い方
+## Usage
 
-```js
-var url =
-  "//cdn.rawgit.com/logue/smfplayer.js/gh-pages/Yamaha%20XG%20Sound%20Set.sf2";
-var wml = new SoundFont.WebMidiLink();
-wml.setLoadCallback(function (arraybuffer) {
-  // ロード完了時の処理
-});
-wml.setup(url);
+```
+const file = Deno.readFileSync("soundfont.sf3");
+const parsed = parse(file);
+const soundFont = new SoundFont(parsed);
 ```
 
-## テスト方法
+## License
 
-```sh
-npm install
-npm start
-```
+MIT
 
-ブラウザで<http://localhost:8080/>を開く。
+## Credits
 
-## 対応ブラウザ
+This library is based on following libraries.
 
-最新の Web Audio API 実装を必要とします。
+- [gree/sf2synth.js](https://github.com/gree/sf2synth.js) writty by imaya / GREE
+  Inc.
+- [ryohey/sf2synth.js](https://github.com/ryohey/sf2synth.js) written by ryohey
 
-- Google Chrome 25+
-- Google Chrome for Android 28+
+## References
 
-## WebMidiLink 対応
+The SoundFont 3 format (SF3) is an unofficial extension of the SoundFont 2
+format (SF2). This library is based on following articles.
 
-sf2synth.js は WebMidiLink の Link Level 1 に対応しています。
-現在、シンセサイザ固有の情報はありません。
-
-## ライセンス
-
-Copyright &copy; 2013 imaya / GREE Inc. Licensed under the MIT License.
+- [SoundFont3Format](https://github.com/FluidSynth/fluidsynth/wiki/SoundFont3Format)
