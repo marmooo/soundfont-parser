@@ -3,10 +3,11 @@ export function readString(
   start: number,
   end: number,
 ): string {
-  const str = String.fromCharCode.apply(null, data.subarray(start, end));
+  const subArray = data.subarray(start, end);
+  const str = String.fromCharCode(...Array.from(subArray));
   const nullLocation = str.indexOf("\u0000");
   if (nullLocation > 0) {
-    return str.substr(0, nullLocation);
+    return str.substring(0, nullLocation);
   }
   return str;
 }
