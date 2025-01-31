@@ -243,7 +243,7 @@ export class SampleHeader {
     return this.sampleName === "EOS";
   }
 
-  static parse(stream: Stream) {
+  static parse(stream: Stream, isSF3?: boolean) {
     const s = new SampleHeader();
 
     s.sampleName = stream.readString(20);
@@ -257,9 +257,10 @@ export class SampleHeader {
     s.sampleLink = stream.readWORD();
     s.sampleType = stream.readWORD();
 
-    s.loopStart -= s.start;
-    s.loopEnd -= s.start;
-
+    if (!isSF3) {
+      s.loopStart -= s.start;
+      s.loopEnd -= s.start;
+    }
     return s;
   }
 }

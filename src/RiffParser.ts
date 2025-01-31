@@ -1,6 +1,10 @@
 import Stream from "./Stream.ts";
 
-function parseChunk(input: Uint8Array, ip: number, bigEndian: boolean): Chunk {
+export function parseChunk(
+  input: Uint8Array,
+  ip: number,
+  bigEndian: boolean,
+): Chunk {
   const stream = new Stream(input, ip);
   const type = stream.readString(4);
   const size = stream.readDWORD(bigEndian);

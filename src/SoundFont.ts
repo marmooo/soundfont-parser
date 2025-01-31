@@ -202,7 +202,7 @@ function removeUndefined<T>(obj: T) {
 }
 
 export interface NoteInfo {
-  sample: Int16Array;
+  sample: Uint8Array;
   sampleRate: number;
   sampleName: string;
   sampleModes: number;
