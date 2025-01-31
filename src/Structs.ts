@@ -23,7 +23,7 @@ export class Info {
   product!: string | null;
   software!: string | null;
   version!: VersionTag;
-  soundEngine!: string | null;
+  soundEngine!: string;
   romName!: string | null;
   romVersion!: VersionTag | null;
 
