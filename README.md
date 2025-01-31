@@ -5,6 +5,8 @@ A SoundFont (SF2, SF3) parser.
 ## Usage
 
 ```
+import { parse, SoundFont } from "@marmooo/soundfont-parser";
+
 const file = Deno.readFileSync("soundfont.sf3");
 const parsed = parse(file);
 const soundFont = new SoundFont(parsed);
