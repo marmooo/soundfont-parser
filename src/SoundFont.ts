@@ -91,7 +91,6 @@ export class SoundFont {
         return false; // global zone を除外
       }
 
-      console.log(i);
       let isInKeyRange = false;
       if (i.keyRange) {
         isInKeyRange = key >= i.keyRange.lo && key <= i.keyRange.hi;
