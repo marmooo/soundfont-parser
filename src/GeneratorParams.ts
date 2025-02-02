@@ -12,7 +12,7 @@ export type GeneratorParams = {
   ]: any;
 };
 
-export function createGeneraterObject(generators: GeneratorList[]) {
+export function createGeneratorObject(generators: GeneratorList[]) {
   const result: Partial<GeneratorParams> = {};
   for (const gen of generators) {
     const type = gen.type;

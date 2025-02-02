@@ -1,5 +1,5 @@
 import {
-  createGeneraterObject,
+  createGeneratorObject,
   defaultInstrumentZone,
   GeneratorParams,
 } from "./GeneratorParams.ts";
@@ -28,7 +28,7 @@ export class SoundFont {
   }
 
   getInstrumentZone(instrumentZoneIndex: number) {
-    return createGeneraterObject(
+    return createGeneratorObject(
       getInstrumentZone(this.parsed, instrumentZoneIndex),
     );
   }
@@ -62,21 +62,21 @@ export class SoundFont {
     );
 
     // Last Preset Generator must be instrument
-    const lastPresetGenertor = presetGenerators[presetGenerators.length - 1];
+    const lastPresetGenerator = presetGenerators[presetGenerators.length - 1];
     if (
-      lastPresetGenertor.type !== "instrument" ||
-      isNaN(Number(lastPresetGenertor.value))
+      lastPresetGenerator.type !== "instrument" ||
+      isNaN(Number(lastPresetGenerator.value))
     ) {
       throw new Error(
         "Invalid SoundFont: invalid preset generator: expect instrument",
       );
     }
-    const instrumentID = lastPresetGenertor.value as number;
+    const instrumentID = lastPresetGenerator.value as number;
 
     const instrumentZones = getInstrumentGenerators(
       this.parsed,
       instrumentID,
-    ).map(createGeneraterObject);
+    ).map(createGeneratorObject);
 
     // 最初のゾーンがsampleID を持たなければ global instrument zone
     let globalInstrumentZone: Partial<GeneratorParams> | undefined;
@@ -91,6 +91,7 @@ export class SoundFont {
         return false; // global zone を除外
       }
 
+      console.log(i);
       let isInKeyRange = false;
       if (i.keyRange) {
         isInKeyRange = key >= i.keyRange.lo && key <= i.keyRange.hi;
