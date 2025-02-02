@@ -63,10 +63,7 @@ export class SoundFont {
 
     // Last Preset Generator must be instrument
     const lastPresetGenerator = presetGenerators[presetGenerators.length - 1];
-    if (
-      lastPresetGenerator.type !== "instrument" ||
-      isNaN(Number(lastPresetGenerator.value))
-    ) {
+    if (lastPresetGenerator.type !== "instrument") {
       throw new Error(
         "Invalid SoundFont: invalid preset generator: expect instrument",
       );
