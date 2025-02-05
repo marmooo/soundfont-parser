@@ -69,6 +69,18 @@ export class Info {
   }
 }
 
+export class Bag {
+  generatorIndex!: number;
+  modulatorIndex!: number;
+
+  static parse(stream: Stream) {
+    const t = new Bag();
+    t.generatorIndex = stream.readWORD();
+    t.modulatorIndex = stream.readWORD();
+    return t;
+  }
+}
+
 export class PresetHeader {
   presetName!: string;
   preset!: number;
@@ -95,18 +107,6 @@ export class PresetHeader {
   }
 }
 
-export class PresetBag {
-  presetGeneratorIndex!: number;
-  presetModulatorIndex!: number;
-
-  static parse(stream: Stream) {
-    const p = new PresetBag();
-    p.presetGeneratorIndex = stream.readWORD();
-    p.presetModulatorIndex = stream.readWORD();
-    return p;
-  }
-}
-
 export class RangeValue {
   lo: number;
   hi: number;
@@ -114,6 +114,10 @@ export class RangeValue {
   constructor(lo: number, hi: number) {
     this.lo = lo;
     this.hi = hi;
+  }
+
+  in(value: number) {
+    return (this.lo <= value && value <= this.hi);
   }
 
   static parse(stream: Stream) {
@@ -211,18 +215,6 @@ export class Instrument {
     const t = new Instrument();
     t.instrumentName = stream.readString(20);
     t.instrumentBagIndex = stream.readWORD();
-    return t;
-  }
-}
-
-export class InstrumentBag {
-  instrumentGeneratorIndex!: number;
-  instrumentModulatorIndex!: number;
-
-  static parse(stream: Stream) {
-    const t = new InstrumentBag();
-    t.instrumentGeneratorIndex = stream.readWORD();
-    t.instrumentModulatorIndex = stream.readWORD();
     return t;
   }
 }

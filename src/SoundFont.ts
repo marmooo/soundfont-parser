@@ -4,13 +4,7 @@ import {
   GeneratorParams,
 } from "./GeneratorParams.ts";
 import { ParseResult } from "./Parser.ts";
-import {
-  getInstrumentGenerators,
-  getInstrumentZone,
-  getInstrumentZoneIndexes,
-} from "./getInstrumentGenerators.ts";
-import { RangeValue } from "./Structs.ts";
-import { getPresetGenerators } from "./getPresetGenerators.ts";
+import { Bag, GeneratorList, RangeValue } from "./Structs.ts";
 
 /**
  * Parser で読み込んだサウンドフォントのデータを
@@ -23,18 +17,47 @@ export class SoundFont {
     this.parsed = parsed;
   }
 
-  getPresetZone(presetHeaderIndex: number) {
-    return getPresetGenerators(this.parsed, presetHeaderIndex);
+  getGenerators(
+    generators: GeneratorList[],
+    zone: Bag[],
+    from: number,
+    to: number,
+  ) {
+    const result = new Array(to - from);
+    for (let i = from; i < to; i++) {
+      const segmentFrom = zone[i].generatorIndex;
+      const segmentTo = zone[i + 1].generatorIndex;
+      result[i - from] = generators.slice(segmentFrom, segmentTo);
+    }
+    return result;
   }
 
-  getInstrumentZone(instrumentZoneIndex: number) {
-    return createGeneratorObject(
-      getInstrumentZone(this.parsed, instrumentZoneIndex),
+  getPresetGenerators(presetHeaderIndex: number) {
+    const presetHeader = this.parsed.presetHeaders[presetHeaderIndex];
+    const nextPresetHeader = this.parsed.presetHeaders[presetHeaderIndex + 1];
+    const nextPresetBagIndex = nextPresetHeader
+      ? nextPresetHeader.presetBagIndex
+      : this.parsed.presetHeaders.length;
+    return this.getGenerators(
+      this.parsed.presetGenerators,
+      this.parsed.presetZone,
+      presetHeader.presetBagIndex,
+      nextPresetBagIndex,
     );
   }
 
-  getInstrumentZoneIndexes(instrumentID: number): number[] {
-    return getInstrumentZoneIndexes(this.parsed, instrumentID);
+  getInstrumentGenerators(instrumentID: number) {
+    const instrument = this.parsed.instruments[instrumentID];
+    const nextInstrument = this.parsed.instruments[instrumentID + 1];
+    const nextInstrumentBagIndex = nextInstrument
+      ? nextInstrument.instrumentBagIndex
+      : this.parsed.instruments.length;
+    return this.getGenerators(
+      this.parsed.instrumentGenerators,
+      this.parsed.instrumentZone,
+      instrument.instrumentBagIndex,
+      nextInstrumentBagIndex,
+    );
   }
 
   getInstrumentKey(
@@ -46,7 +69,6 @@ export class SoundFont {
     const presetHeaderIndex = this.parsed.presetHeaders.findIndex(
       (p) => p.preset === instrumentNumber && p.bank === bankNumber,
     );
-
     if (presetHeaderIndex < 0) {
       console.warn(
         "preset not found: bank=%s instrument=%s",
@@ -56,52 +78,39 @@ export class SoundFont {
       return null;
     }
 
-    const presetGenerators = getPresetGenerators(
-      this.parsed,
-      presetHeaderIndex,
-    );
-
-    // Last Preset Generator must be instrument
-    const lastPresetGenerator = presetGenerators[presetGenerators.length - 1];
-    if (lastPresetGenerator.type !== "instrument") {
-      throw new Error(
-        "Invalid SoundFont: invalid preset generator: expect instrument",
-      );
-    }
-    const instrumentID = lastPresetGenerator.value as number;
-
-    const instrumentZones = getInstrumentGenerators(
-      this.parsed,
-      instrumentID,
-    ).map(createGeneratorObject);
-
-    // 最初のゾーンがsampleID を持たなければ global instrument zone
+    const presetGenerators = this.getPresetGenerators(presetHeaderIndex);
+    let globalPresetZone: Partial<GeneratorParams> | undefined;
     let globalInstrumentZone: Partial<GeneratorParams> | undefined;
-    const firstInstrumentZone = instrumentZones[0];
-    if (firstInstrumentZone.sampleID === undefined) {
-      globalInstrumentZone = instrumentZones[0];
+    let targetInstrumentZone: Partial<GeneratorParams> | undefined;
+    for (let i = 0; i < presetGenerators.length; i++) {
+      const presetZone = createGeneratorObject(presetGenerators[i]);
+      if (presetZone.instrument === undefined) {
+        globalPresetZone = presetZone;
+        continue;
+      }
+      if (presetZone.keyRange && !presetZone.keyRange.in(key)) continue;
+      if (presetZone.velRange && !presetZone.velRange.in(velocity)) continue;
+      const instrumentGenerators = this.getInstrumentGenerators(
+        presetZone.instrument,
+      );
+      for (let j = 0; j < instrumentGenerators.length; j++) {
+        const instrumentZone = createGeneratorObject(instrumentGenerators[j]);
+        if (instrumentZone.sampleID === undefined) {
+          globalInstrumentZone = instrumentZone;
+          continue;
+        }
+        if (instrumentZone.keyRange && !instrumentZone.keyRange.in(key)) {
+          continue;
+        }
+        if (instrumentZone.velRange && !instrumentZone.velRange.in(velocity)) {
+          continue;
+        }
+        targetInstrumentZone = instrumentZone;
+        break;
+      }
+      if (targetInstrumentZone) break;
     }
-
-    // keyRange と velRange がマッチしている Generator を探す
-    const instrumentZone = instrumentZones.find((i) => {
-      if (i === globalInstrumentZone) {
-        return false; // global zone を除外
-      }
-
-      let isInKeyRange = false;
-      if (i.keyRange) {
-        isInKeyRange = key >= i.keyRange.lo && key <= i.keyRange.hi;
-      }
-
-      let isInVelRange = true;
-      if (i.velRange) {
-        isInVelRange = velocity >= i.velRange.lo && velocity <= i.velRange.hi;
-      }
-
-      return isInKeyRange && isInVelRange;
-    });
-
-    if (!instrumentZone) {
+    if (!targetInstrumentZone) {
       console.warn(
         "instrument not found: bank=%s instrument=%s",
         bankNumber,
@@ -109,15 +118,15 @@ export class SoundFont {
       );
       return null;
     }
-
-    if (instrumentZone.sampleID === undefined) {
+    if (targetInstrumentZone.sampleID === undefined) {
       throw new Error("Invalid SoundFont: sampleID not found");
     }
 
     const gen = {
       ...defaultInstrumentZone,
+      ...removeUndefined(globalPresetZone || {}),
       ...removeUndefined(globalInstrumentZone || {}),
-      ...removeUndefined(instrumentZone),
+      ...removeUndefined(targetInstrumentZone),
     };
 
     const sample = this.parsed.samples[gen.sampleID!];

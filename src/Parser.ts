@@ -5,12 +5,11 @@ import {
   parseRiff,
 } from "./RiffParser.ts";
 import {
+  Bag,
   GeneratorList,
   Info,
   Instrument,
-  InstrumentBag,
   ModulatorList,
-  PresetBag,
   PresetHeader,
   SampleHeader,
 } from "./Structs.ts";
@@ -18,11 +17,11 @@ import Stream from "./Stream.ts";
 
 export interface ParseResult {
   presetHeaders: PresetHeader[];
-  presetZone: PresetBag[];
+  presetZone: Bag[];
   presetModulators: ModulatorList[];
   presetGenerators: GeneratorList[];
   instruments: Instrument[];
-  instrumentZone: InstrumentBag[];
+  instrumentZone: Bag[];
   instrumentModulators: ModulatorList[];
   instrumentGenerators: GeneratorList[];
   sampleHeaders: SampleHeader[];
@@ -185,11 +184,11 @@ function parseChunkObjecs<T>(
 const parsePhdr = (chunk: Chunk, data: Uint8Array) =>
   parseChunkObjecs(chunk, data, "phdr", PresetHeader, (p) => p.isEnd);
 const parsePbag = (chunk: Chunk, data: Uint8Array) =>
-  parseChunkObjecs(chunk, data, "pbag", PresetBag);
+  parseChunkObjecs(chunk, data, "pbag", Bag);
 const parseInst = (chunk: Chunk, data: Uint8Array) =>
   parseChunkObjecs(chunk, data, "inst", Instrument, (i) => i.isEnd);
 const parseIbag = (chunk: Chunk, data: Uint8Array) =>
-  parseChunkObjecs(chunk, data, "ibag", InstrumentBag);
+  parseChunkObjecs(chunk, data, "ibag", Bag);
 const parsePmod = (chunk: Chunk, data: Uint8Array) =>
   parseChunkObjecs(chunk, data, "pmod", ModulatorList, (m) => m.isEnd);
 const parseImod = (chunk: Chunk, data: Uint8Array) =>
