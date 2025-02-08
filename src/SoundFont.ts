@@ -6,12 +6,8 @@ import {
 import { ParseResult } from "./Parser.ts";
 import { Bag, GeneratorList, RangeValue } from "./Structs.ts";
 
-/**
- * Parser で読み込んだサウンドフォントのデータを
- * Synthesizer から利用しやすい形にするクラス
- */
 export class SoundFont {
-  private parsed: ParseResult;
+  parsed: ParseResult;
 
   constructor(parsed: ParseResult) {
     this.parsed = parsed;
@@ -37,7 +33,7 @@ export class SoundFont {
     const nextPresetHeader = this.parsed.presetHeaders[presetHeaderIndex + 1];
     const nextPresetBagIndex = nextPresetHeader
       ? nextPresetHeader.presetBagIndex
-      : this.parsed.presetHeaders.length;
+      : this.parsed.presetZone.length - 1;
     return this.getGenerators(
       this.parsed.presetGenerators,
       this.parsed.presetZone,
@@ -51,7 +47,7 @@ export class SoundFont {
     const nextInstrument = this.parsed.instruments[instrumentID + 1];
     const nextInstrumentBagIndex = nextInstrument
       ? nextInstrument.instrumentBagIndex
-      : this.parsed.instruments.length;
+      : this.parsed.instrumentZone.length - 1;
     return this.getGenerators(
       this.parsed.instrumentGenerators,
       this.parsed.instrumentZone,
