@@ -52,7 +52,7 @@ Deno.test("should create InstrumentKey", () => {
   assertAlmostEquals(key.modDecay, 0.4, tolerance, "modDecay");
   assertAlmostEquals(key.modSustain, 0.5 / 100, tolerance, "modSustain");
   assertAlmostEquals(key.modRelease, 0.6, tolerance, "modRelease");
-  assertAlmostEquals(key.modEnvToPitch, 1 / 100, tolerance, "modEnvToPitch");
+  assertAlmostEquals(key.modEnvToPitch, 1, tolerance, "modEnvToPitch");
   assertAlmostEquals(key.modEnvToFilterFc, 2, tolerance, "modEnvToFilterFc");
 });
 Deno.test("should apply Global Instrument Zone", () => {
