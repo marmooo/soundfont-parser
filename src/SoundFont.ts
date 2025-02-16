@@ -232,7 +232,7 @@ export interface NoteInfo {
   initialFilterQ: number;
   initialAttenuation: number;
   freqVibLFO: number | undefined;
-  pan: number | undefined;
+  pan: number;
   keyRange: RangeValue;
   velRange: RangeValue | undefined;
 }

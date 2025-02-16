@@ -75,5 +75,5 @@ export const defaultInstrumentZone: GeneratorParams = {
   initialFilterQ: 1,
   initialFilterFc: 13500,
   sampleModes: 0,
-  pan: undefined,
+  pan: 0,
 };
