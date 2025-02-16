@@ -232,5 +232,5 @@ export interface NoteInfo {
   freqVibLFO: number;
   pan: number;
   keyRange: RangeValue;
-  velRange: RangeValue | undefined;
+  velRange: RangeValue;
 }
