@@ -14,7 +14,7 @@ await build({
   },
   package: {
     name: "@marmooo/soundfont-parser",
-    version: "0.0.1",
+    version: "0.0.2",
     description: "A SoundFont (SF2, SF3) parser.",
     license: "MIT",
     repository: {
