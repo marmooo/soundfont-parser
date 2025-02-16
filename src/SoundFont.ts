@@ -168,9 +168,7 @@ export class SoundFont {
       modEnvToFilterFc: gen.modEnvToFilterFc, // semitone (100 cent)
       initialFilterQ: gen.initialFilterQ,
       initialAttenuation: gen.initialAttenuation,
-      freqVibLFO: gen.freqVibLFO
-        ? convertTime(gen.freqVibLFO) * 8.176
-        : undefined,
+      freqVibLFO: convertTime(gen.freqVibLFO) * 8.176,
       pan: gen.pan,
     };
   }
@@ -231,7 +229,7 @@ export interface NoteInfo {
   modEnvToFilterFc: number;
   initialFilterQ: number;
   initialAttenuation: number;
-  freqVibLFO: number | undefined;
+  freqVibLFO: number;
   pan: number;
   keyRange: RangeValue;
   velRange: RangeValue | undefined;
