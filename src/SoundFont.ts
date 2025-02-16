@@ -140,7 +140,14 @@ export class SoundFont {
       sampleModes: gen.sampleModes,
       playbackRate: (key: number) =>
         Math.pow(Math.pow(2, 1 / 12), (key + basePitch) * scaleTuning),
-      modEnvToPitch: gen.modEnvToPitch / 100, // cent
+      modLfoToPitch: gen.modLfoToPitch,
+      vibLfoToPitch: gen.vibLfoToPitch,
+      modEnvToPitch: gen.modEnvToPitch,
+      initialFilterFc: gen.initialFilterFc,
+      initialFilterQ: gen.initialFilterQ,
+      modLfoToFilterFc: gen.modLfoToFilterFc,
+      modEnvToFilterFc: gen.modEnvToFilterFc,
+      modLfoToVolume: gen.modLfoToVolume,
       scaleTuning,
       start: gen.startAddrsCoarseOffset * 32768 + gen.startAddrsOffset,
       end: gen.endAddrsCoarseOffset * 32768 + gen.endAddrsOffset,
@@ -164,11 +171,11 @@ export class SoundFont {
       modRelease: convertTime(gen.releaseModEnv),
       keyRange: gen.keyRange,
       velRange: gen.velRange,
-      initialFilterFc: gen.initialFilterFc,
-      modEnvToFilterFc: gen.modEnvToFilterFc, // semitone (100 cent)
-      initialFilterQ: gen.initialFilterQ,
+      delayModLFO: convertTime(gen.delayModLFO),
+      freqModLFO: gen.freqModLFO,
+      delayVibLFO: convertTime(gen.delayVibLFO),
+      freqVibLFO: gen.freqVibLFO,
       initialAttenuation: gen.initialAttenuation,
-      freqVibLFO: convertTime(gen.freqVibLFO) * 8.176,
       pan: gen.pan,
     };
   }
@@ -207,7 +214,14 @@ export interface NoteInfo {
   sampleName: string;
   sampleModes: number;
   playbackRate: (key: number) => number;
+  modLfoToPitch: number;
+  vibLfoToPitch: number;
   modEnvToPitch: number;
+  initialFilterFc: number;
+  initialFilterQ: number;
+  modLfoToFilterFc: number;
+  modEnvToFilterFc: number;
+  modLfoToVolume: number;
   scaleTuning: number;
   start: number;
   end: number;
@@ -225,11 +239,11 @@ export interface NoteInfo {
   modDecay: number;
   modSustain: number;
   modRelease: number;
-  initialFilterFc: number;
-  modEnvToFilterFc: number;
-  initialFilterQ: number;
-  initialAttenuation: number;
+  delayModLFO: number;
+  freqModLFO: number;
+  delayVibLFO: number;
   freqVibLFO: number;
+  initialAttenuation: number;
   pan: number;
   keyRange: RangeValue;
   velRange: RangeValue;
