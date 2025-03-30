@@ -41,7 +41,7 @@ export const defaultInstrumentZone: GeneratorParams = {
   chorusEffectsSend: 0,
   reverbEffectsSend: 0,
   pan: 0,
-  delayModLFO: 0,
+  delayModLFO: -12000,
   freqModLFO: 0,
   delayVibLFO: 0,
   freqVibLFO: 0,
