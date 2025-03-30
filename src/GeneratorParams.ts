@@ -33,7 +33,7 @@ export const defaultInstrumentZone: GeneratorParams = {
   vibLfoToPitch: 0,
   modEnvToPitch: 0,
   initialFilterFc: 13500,
-  initialFilterQ: 1,
+  initialFilterQ: 0,
   modLfoToFilterFc: 0,
   modEnvToFilterFc: 0,
   endAddrsCoarseOffset: 0,
