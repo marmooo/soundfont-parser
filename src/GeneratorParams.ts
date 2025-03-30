@@ -65,7 +65,7 @@ export const defaultInstrumentZone: GeneratorParams = {
   keyRange: new RangeValue(0, 127),
   velRange: new RangeValue(0, 127),
   startloopAddrsCoarseOffset: 0,
-  keynum: undefined,
+  keynum: -1,
   velocity: undefined,
   initialAttenuation: 0,
   endloopAddrsCoarseOffset: 0,
