@@ -75,5 +75,5 @@ export const defaultInstrumentZone: GeneratorParams = {
   sampleModes: 0,
   scaleTuning: 100,
   exclusiveClass: 0,
-  overridingRootKey: undefined,
+  overridingRootKey: -1,
 };
