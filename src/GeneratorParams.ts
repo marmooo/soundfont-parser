@@ -43,7 +43,7 @@ export const defaultInstrumentZone: GeneratorParams = {
   pan: 0,
   delayModLFO: -12000,
   freqModLFO: 0,
-  delayVibLFO: 0,
+  delayVibLFO: -12000,
   freqVibLFO: 0,
   delayModEnv: -12000,
   attackModEnv: -12000,
