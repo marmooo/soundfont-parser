@@ -134,12 +134,18 @@ export class SoundFont {
     const scaleTuning = gen.scaleTuning / 100;
 
     return {
-      sample,
-      sampleRate: sampleHeader.sampleRate,
-      sampleName: sampleHeader.sampleName,
-      sampleModes: gen.sampleModes,
-      playbackRate: (key: number) =>
-        Math.pow(Math.pow(2, 1 / 12), (key + basePitch) * scaleTuning),
+      // startAddrsOffset: gen.startAddrsOffset,
+      // endAddrsOffset: gen.endAddrsOffset,
+      start: gen.startAddrsCoarseOffset * 32768 + gen.startAddrsOffset,
+      end: gen.endAddrsCoarseOffset * 32768 + gen.endAddrsOffset,
+      // startloopAddrsOffset: gen.startloopAddrsOffset,
+      // endloopAddrsOffset: gen.endloopAddrsOffset,
+      loopStart: sampleHeader.loopStart +
+        gen.startloopAddrsCoarseOffset * 32768 +
+        gen.startloopAddrsOffset,
+      loopEnd: sampleHeader.loopEnd +
+        gen.endloopAddrsCoarseOffset * 32768 +
+        gen.endloopAddrsOffset,
       modLfoToPitch: gen.modLfoToPitch,
       vibLfoToPitch: gen.vibLfoToPitch,
       modEnvToPitch: gen.modEnvToPitch,
@@ -147,36 +153,63 @@ export class SoundFont {
       initialFilterQ: gen.initialFilterQ,
       modLfoToFilterFc: gen.modLfoToFilterFc,
       modEnvToFilterFc: gen.modEnvToFilterFc,
+      // endAddrsCoarseOffset: gen.endAddrsCoarseOffset,
       modLfoToVolume: gen.modLfoToVolume,
-      scaleTuning,
-      start: gen.startAddrsCoarseOffset * 32768 + gen.startAddrsOffset,
-      end: gen.endAddrsCoarseOffset * 32768 + gen.endAddrsOffset,
-      loopStart: sampleHeader.loopStart +
-        gen.startloopAddrsCoarseOffset * 32768 +
-        gen.startloopAddrsOffset,
-      loopEnd: sampleHeader.loopEnd +
-        gen.endloopAddrsCoarseOffset * 32768 +
-        gen.endloopAddrsOffset,
-      volDelay: convertTime(gen.delayVolEnv),
-      volAttack: convertTime(gen.attackVolEnv),
-      volHold: convertTime(gen.holdVolEnv),
-      volDecay: convertTime(gen.decayVolEnv),
-      volSustain: gen.sustainVolEnv / 1000,
-      volRelease: convertTime(gen.releaseVolEnv),
+      // chorusEffectsSend: gen.chorusEffectsSend,
+      // reverbEffectsSend: gen.reverbEffectsSend,
+      pan: gen.pan,
+      delayModLFO: convertTime(gen.delayModLFO),
+      freqModLFO: gen.freqModLFO,
+      delayVibLFO: convertTime(gen.delayVibLFO),
+      freqVibLFO: gen.freqVibLFO,
+      // delayModEnv: gen.delayModEnv,
+      // attackModEnv: gen.attackModEnv,
+      // holdModEnv: gen.holdModEnv,
+      // decayModEnv: gen.decayModEnv,
+      // sustainModEnv: gen.sustainModEnv,
+      // releaseModEnv: gen.releaseModEnv,
       modDelay: convertTime(gen.delayModEnv),
       modAttack: convertTime(gen.attackModEnv),
       modHold: convertTime(gen.holdModEnv),
       modDecay: convertTime(gen.decayModEnv),
       modSustain: gen.sustainModEnv / 1000,
       modRelease: convertTime(gen.releaseModEnv),
+      // keynumToModEnvHold: gen.keynumToModEnvHold,
+      // keynumToModEnvDecay: gen.keynumToModEnvDecay,
+      // delayVolEnv: gen.delayVolEnv,
+      // attackVolEnv: gen.attackVolEnv,
+      // holdVolEnv: gen.holdVolEnv,
+      // decayVolEnv: gen.decayVolEnv,
+      // sustainVolEnv: gen.sustainVolEnv,
+      // releaseVolEnv: gen.releaseVolEnv,
+      volDelay: convertTime(gen.delayVolEnv),
+      volAttack: convertTime(gen.attackVolEnv),
+      volHold: convertTime(gen.holdVolEnv),
+      volDecay: convertTime(gen.decayVolEnv),
+      volSustain: gen.sustainVolEnv / 1000,
+      volRelease: convertTime(gen.releaseVolEnv),
+      // keynumToVolEnvHold: gen.keynumToVolEnvHold,
+      // keynumToVolEnvDecay: gen.keynumToVolEnvDecay,
+      // instrument: gen.instrument,
       keyRange: gen.keyRange,
       velRange: gen.velRange,
-      delayModLFO: convertTime(gen.delayModLFO),
-      freqModLFO: gen.freqModLFO,
-      delayVibLFO: convertTime(gen.delayVibLFO),
-      freqVibLFO: gen.freqVibLFO,
+      // startloopAddrsCoarseOffset: gen.startloopAddrsCoarseOffset,
+      // keynum: gen.keynum,
+      // velocity: gen.velocity,
       initialAttenuation: gen.initialAttenuation,
-      pan: gen.pan,
+      // endloopAddrsCoarseOffset: gen.endloopAddrsCoarseOffset,
+      // coarseTune: gen.coarseTune,
+      // fineTune: gen.fineTune,
+      playbackRate: (key: number) =>
+        Math.pow(Math.pow(2, 1 / 12), (key + basePitch) * scaleTuning),
+      // sampleID: gen.sampleID,
+      sample,
+      sampleRate: sampleHeader.sampleRate,
+      sampleName: sampleHeader.sampleName,
+      sampleModes: gen.sampleModes,
+      scaleTuning,
+      // exclusiveClass: gen.exclusiveClass,
+      // overridingRootKey: gen.overridingRootKey,
     };
   }
 
@@ -209,11 +242,14 @@ function removeUndefined<T>(obj: T) {
 }
 
 export interface NoteInfo {
-  sample: Uint8Array;
-  sampleRate: number;
-  sampleName: string;
-  sampleModes: number;
-  playbackRate: (key: number) => number;
+  // startAddrsOffset: number;
+  // endAddrsOffset: number;
+  start: number;
+  end: number;
+  // startloopAddrsOffset: number;
+  // endloopAddrsOffset: number;
+  loopStart: number;
+  loopEnd: number;
   modLfoToPitch: number;
   vibLfoToPitch: number;
   modEnvToPitch: number;
@@ -221,30 +257,60 @@ export interface NoteInfo {
   initialFilterQ: number;
   modLfoToFilterFc: number;
   modEnvToFilterFc: number;
+  // endAddrsCoarseOffset: number;
   modLfoToVolume: number;
-  scaleTuning: number;
-  start: number;
-  end: number;
-  loopStart: number;
-  loopEnd: number;
-  volDelay: number;
-  volAttack: number;
-  volHold: number;
-  volDecay: number;
-  volSustain: number;
-  volRelease: number;
+  // chorusEffectsSend: number;
+  // reverbEffectsSend: number;
+  pan: number;
+  delayModLFO: number;
+  freqModLFO: number;
+  delayVibLFO: number;
+  freqVibLFO: number;
+  // delayModEnv: number;
+  // attackModEnv: number;
+  // holdModEnv: number;
+  // decayModEnv: number;
+  // sustainModEnv: number;
+  // releaseModEnv: number;
   modDelay: number;
   modAttack: number;
   modHold: number;
   modDecay: number;
   modSustain: number;
   modRelease: number;
-  delayModLFO: number;
-  freqModLFO: number;
-  delayVibLFO: number;
-  freqVibLFO: number;
-  initialAttenuation: number;
-  pan: number;
+  // keynumToModEnvHold: number;
+  // keynumToModEnvDecay: number;
+  // delayVolEnv: number;
+  // attackVolEnv: number;
+  // holdVolEnv: number;
+  // decayVolEnv: number;
+  // sustainVolEnv: number;
+  // releaseVolEnv: number;
+  volDelay: number;
+  volAttack: number;
+  volHold: number;
+  volDecay: number;
+  volSustain: number;
+  volRelease: number;
+  // keynumToVolEnvHold: number;
+  // keynumToVolEnvDecay: number;
+  // instrument: number | undefined;
   keyRange: RangeValue;
   velRange: RangeValue;
+  // startloopAddrsCoarseOffset: number;
+  // keynum: number;
+  // velocity: number;
+  initialAttenuation: number;
+  // endloopAddrsCoarseOffset: number;
+  // coarseTune: number;
+  // fineTune: number;
+  playbackRate: (key: number) => number;
+  // sampleID: number | undefined;
+  sample: Uint8Array;
+  sampleRate: number;
+  sampleName: string;
+  sampleModes: number;
+  scaleTuning: number;
+  // exclusiveClass: number;
+  // overridingRootKey: number;
 }
