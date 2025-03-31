@@ -155,8 +155,8 @@ export class SoundFont {
       modEnvToFilterFc: gen.modEnvToFilterFc,
       // endAddrsCoarseOffset: gen.endAddrsCoarseOffset,
       modLfoToVolume: gen.modLfoToVolume,
-      // chorusEffectsSend: gen.chorusEffectsSend,
-      // reverbEffectsSend: gen.reverbEffectsSend,
+      chorusEffectsSend: gen.chorusEffectsSend,
+      reverbEffectsSend: gen.reverbEffectsSend,
       pan: gen.pan,
       delayModLFO: convertTime(gen.delayModLFO),
       freqModLFO: gen.freqModLFO,
@@ -174,8 +174,8 @@ export class SoundFont {
       modDecay: convertTime(gen.decayModEnv),
       modSustain: gen.sustainModEnv / 1000,
       modRelease: convertTime(gen.releaseModEnv),
-      // keynumToModEnvHold: gen.keynumToModEnvHold,
-      // keynumToModEnvDecay: gen.keynumToModEnvDecay,
+      keynumToModEnvHold: gen.keynumToModEnvHold,
+      keynumToModEnvDecay: gen.keynumToModEnvDecay,
       // delayVolEnv: gen.delayVolEnv,
       // attackVolEnv: gen.attackVolEnv,
       // holdVolEnv: gen.holdVolEnv,
@@ -188,14 +188,14 @@ export class SoundFont {
       volDecay: convertTime(gen.decayVolEnv),
       volSustain: gen.sustainVolEnv / 1000,
       volRelease: convertTime(gen.releaseVolEnv),
-      // keynumToVolEnvHold: gen.keynumToVolEnvHold,
-      // keynumToVolEnvDecay: gen.keynumToVolEnvDecay,
+      keynumToVolEnvHold: gen.keynumToVolEnvHold,
+      keynumToVolEnvDecay: gen.keynumToVolEnvDecay,
       // instrument: gen.instrument,
       keyRange: gen.keyRange,
       velRange: gen.velRange,
       // startloopAddrsCoarseOffset: gen.startloopAddrsCoarseOffset,
-      // keynum: gen.keynum,
-      // velocity: gen.velocity,
+      keynum: gen.keynum,
+      velocity: gen.velocity,
       initialAttenuation: gen.initialAttenuation,
       // endloopAddrsCoarseOffset: gen.endloopAddrsCoarseOffset,
       // coarseTune: gen.coarseTune,
@@ -207,8 +207,8 @@ export class SoundFont {
       sampleRate: sampleHeader.sampleRate,
       sampleName: sampleHeader.sampleName,
       sampleModes: gen.sampleModes,
-      scaleTuning,
-      // exclusiveClass: gen.exclusiveClass,
+      // scaleTuning,
+      exclusiveClass: gen.exclusiveClass,
       // overridingRootKey: gen.overridingRootKey,
     };
   }
@@ -259,8 +259,8 @@ export interface NoteInfo {
   modEnvToFilterFc: number;
   // endAddrsCoarseOffset: number;
   modLfoToVolume: number;
-  // chorusEffectsSend: number;
-  // reverbEffectsSend: number;
+  chorusEffectsSend: number;
+  reverbEffectsSend: number;
   pan: number;
   delayModLFO: number;
   freqModLFO: number;
@@ -278,8 +278,8 @@ export interface NoteInfo {
   modDecay: number;
   modSustain: number;
   modRelease: number;
-  // keynumToModEnvHold: number;
-  // keynumToModEnvDecay: number;
+  keynumToModEnvHold: number;
+  keynumToModEnvDecay: number;
   // delayVolEnv: number;
   // attackVolEnv: number;
   // holdVolEnv: number;
@@ -292,14 +292,14 @@ export interface NoteInfo {
   volDecay: number;
   volSustain: number;
   volRelease: number;
-  // keynumToVolEnvHold: number;
-  // keynumToVolEnvDecay: number;
+  keynumToVolEnvHold: number;
+  keynumToVolEnvDecay: number;
   // instrument: number | undefined;
   keyRange: RangeValue;
   velRange: RangeValue;
   // startloopAddrsCoarseOffset: number;
-  // keynum: number;
-  // velocity: number;
+  keynum: number;
+  velocity: number;
   initialAttenuation: number;
   // endloopAddrsCoarseOffset: number;
   // coarseTune: number;
@@ -310,7 +310,7 @@ export interface NoteInfo {
   sampleRate: number;
   sampleName: string;
   sampleModes: number;
-  scaleTuning: number;
-  // exclusiveClass: number;
+  // scaleTuning: number;
+  exclusiveClass: number;
   // overridingRootKey: number;
 }
