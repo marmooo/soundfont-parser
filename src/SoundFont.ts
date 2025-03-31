@@ -128,9 +128,10 @@ export class SoundFont {
     const sample = this.parsed.samples[gen.sampleID!];
     const sampleHeader = this.parsed.sampleHeaders[gen.sampleID!];
     const tune = gen.coarseTune + gen.fineTune / 100;
-    const basePitch = tune +
-      sampleHeader.pitchCorrection / 100 -
-      (gen.overridingRootKey || sampleHeader.originalPitch);
+    const rootKey = gen.overridingRootKey === -1
+      ? sampleHeader.originalPitch
+      : gen.overridingRootKey;
+    const basePitch = tune + sampleHeader.pitchCorrection / 100 - rootKey;
     const scaleTuning = gen.scaleTuning / 100;
 
     return {
