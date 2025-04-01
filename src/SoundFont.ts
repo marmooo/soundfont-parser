@@ -285,7 +285,7 @@ export interface NoteInfo {
   volRelease: number;
   keynumToVolEnvHold: number;
   keynumToVolEnvDecay: number;
-  // instrument: number | undefined;
+  // instrument: number;
   keyRange: RangeValue;
   velRange: RangeValue;
   // startloopAddrsCoarseOffset: number;
@@ -296,7 +296,7 @@ export interface NoteInfo {
   // coarseTune: number;
   // fineTune: number;
   playbackRate: (key: number) => number;
-  // sampleID: number | undefined;
+  // sampleID: number;
   sample: Uint8Array;
   sampleRate: number;
   sampleName: string;
