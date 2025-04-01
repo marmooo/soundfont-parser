@@ -120,13 +120,13 @@ export class SoundFont {
 
     const gen = {
       ...defaultInstrumentZone,
-      ...removeUndefined(globalPresetZone || {}),
-      ...removeUndefined(globalInstrumentZone || {}),
-      ...removeUndefined(targetInstrumentZone),
+      ...globalPresetZone || {},
+      ...globalInstrumentZone || {},
+      ...targetInstrumentZone,
     };
 
-    const sample = this.parsed.samples[gen.sampleID!];
-    const sampleHeader = this.parsed.sampleHeaders[gen.sampleID!];
+    const sample = this.parsed.samples[gen.sampleID];
+    const sampleHeader = this.parsed.sampleHeaders[gen.sampleID];
     const tune = gen.coarseTune + gen.fineTune / 100;
     const rootKey = gen.overridingRootKey === -1
       ? sampleHeader.originalPitch
@@ -230,16 +230,6 @@ export class SoundFont {
 // value = 1200log2(sec) で表される時間を秒単位に変換する
 export function convertTime(value: number) {
   return Math.pow(2, value / 1200);
-}
-
-function removeUndefined<T>(obj: T) {
-  const result: Partial<T> = {};
-  for (const key in obj) {
-    if (obj[key] !== undefined) {
-      result[key] = obj[key];
-    }
-  }
-  return result;
 }
 
 export interface NoteInfo {
