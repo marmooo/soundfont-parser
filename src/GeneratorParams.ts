@@ -1,15 +1,11 @@
 import { GeneratorEnumeratorTable } from "./Constants.ts";
 import { GeneratorList, RangeValue } from "./Structs.ts";
 
-type TupleToUnion<T extends readonly any[]> = T[number];
-
+type RawAllowedKeys = typeof GeneratorEnumeratorTable[number];
+type AllowedKeys = Exclude<RawAllowedKeys, undefined>;
 export type GeneratorParams = {
-  [
-    key in Exclude<
-      TupleToUnion<typeof GeneratorEnumeratorTable>,
-      undefined
-    >
-  ]: any;
+  [key in AllowedKeys]: key extends "keyRange" | "velRange" ? RangeValue
+    : number;
 };
 
 export function createGeneratorObject(generators: GeneratorList[]) {
@@ -17,7 +13,11 @@ export function createGeneratorObject(generators: GeneratorList[]) {
   for (const gen of generators) {
     const type = gen.type;
     if (type !== undefined) {
-      result[type] = gen.value;
+      if (type === "keyRange" || type === "velRange") {
+        result[type] = gen.value as RangeValue;
+      } else {
+        result[type] = gen.value as number;
+      }
     }
   }
   return result;
@@ -61,7 +61,7 @@ export const defaultInstrumentZone: GeneratorParams = {
   releaseVolEnv: -12000,
   keynumToVolEnvHold: 0,
   keynumToVolEnvDecay: 0,
-  instrument: undefined,
+  instrument: -1,
   keyRange: new RangeValue(0, 127),
   velRange: new RangeValue(0, 127),
   startloopAddrsCoarseOffset: 0,
@@ -71,7 +71,7 @@ export const defaultInstrumentZone: GeneratorParams = {
   endloopAddrsCoarseOffset: 0,
   coarseTune: 0,
   fineTune: 0,
-  sampleID: undefined,
+  sampleID: -1,
   sampleModes: 0,
   scaleTuning: 100,
   exclusiveClass: 0,
