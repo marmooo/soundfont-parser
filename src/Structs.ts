@@ -153,10 +153,8 @@ export class ModulatorList {
     t.destinationOper = stream.readWORD();
 
     switch (t.type) {
-      case "keyRange": /* FALLTHROUGH */
-      case "velRange": /* FALLTHROUGH */
-      case "keynum": /* FALLTHROUGH */
-      case "velocity":
+      case "keyRange":
+      case "velRange":
         t.value = RangeValue.parse(stream);
         break;
       default:
@@ -188,10 +186,8 @@ export class GeneratorList {
     t.code = stream.readWORD();
 
     switch (t.type) {
-      case "keynum": /* FALLTHROUGH */
-      case "keyRange": /* FALLTHROUGH */
-      case "velRange": /* FALLTHROUGH */
-      case "velocity":
+      case "keyRange":
+      case "velRange":
         t.value = RangeValue.parse(stream);
         break;
       default:
