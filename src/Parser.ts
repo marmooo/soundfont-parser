@@ -153,7 +153,7 @@ function parseSdtaList(chunk: Chunk, data: Uint8Array): SamplingData {
   };
 }
 
-function parseChunkObjecs<T>(
+function parseChunkObjects<T>(
   chunk: Chunk,
   data: Uint8Array,
   type: string,
@@ -182,23 +182,23 @@ function parseChunkObjecs<T>(
 }
 
 const parsePhdr = (chunk: Chunk, data: Uint8Array) =>
-  parseChunkObjecs(chunk, data, "phdr", PresetHeader, (p) => p.isEnd);
+  parseChunkObjects(chunk, data, "phdr", PresetHeader, (p) => p.isEnd);
 const parsePbag = (chunk: Chunk, data: Uint8Array) =>
-  parseChunkObjecs(chunk, data, "pbag", Bag);
+  parseChunkObjects(chunk, data, "pbag", Bag);
 const parseInst = (chunk: Chunk, data: Uint8Array) =>
-  parseChunkObjecs(chunk, data, "inst", Instrument, (i) => i.isEnd);
+  parseChunkObjects(chunk, data, "inst", Instrument, (i) => i.isEnd);
 const parseIbag = (chunk: Chunk, data: Uint8Array) =>
-  parseChunkObjecs(chunk, data, "ibag", Bag);
+  parseChunkObjects(chunk, data, "ibag", Bag);
 const parsePmod = (chunk: Chunk, data: Uint8Array) =>
-  parseChunkObjecs(chunk, data, "pmod", ModulatorList, (m) => m.isEnd);
+  parseChunkObjects(chunk, data, "pmod", ModulatorList, (m) => m.isEnd);
 const parseImod = (chunk: Chunk, data: Uint8Array) =>
-  parseChunkObjecs(chunk, data, "imod", ModulatorList, (m) => m.isEnd);
+  parseChunkObjects(chunk, data, "imod", ModulatorList, (m) => m.isEnd);
 const parsePgen = (chunk: Chunk, data: Uint8Array) =>
-  parseChunkObjecs(chunk, data, "pgen", GeneratorList, (g) => g.isEnd);
+  parseChunkObjects(chunk, data, "pgen", GeneratorList, (g) => g.isEnd);
 const parseIgen = (chunk: Chunk, data: Uint8Array) =>
-  parseChunkObjecs(chunk, data, "igen", GeneratorList);
+  parseChunkObjects(chunk, data, "igen", GeneratorList);
 const parseShdr = (chunk: Chunk, data: Uint8Array, isSF3: boolean) =>
-  parseChunkObjecs(chunk, data, "shdr", SampleHeader, (s) => s.isEnd, isSF3);
+  parseChunkObjects(chunk, data, "shdr", SampleHeader, (s) => s.isEnd, isSF3);
 
 function loadSample(
   sampleHeader: SampleHeader[],
