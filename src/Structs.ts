@@ -27,7 +27,6 @@ export class Info {
   romName!: string | null;
   romVersion!: VersionTag | null;
 
-  // LIST - INFO の全ての chunk
   static parse(data: Uint8Array, chunks: Chunk[]) {
     function getChunk(type: string) {
       return chunks.find((c) => c.type === type);
