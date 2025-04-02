@@ -4,7 +4,7 @@ import {
   assertNotEquals,
 } from "jsr:@std/assert";
 import { parse } from "./Parser.ts";
-import { convertTime, SoundFont } from "./SoundFont.ts";
+import { SoundFont, timecentToSecond } from "./SoundFont.ts";
 import { createGeneratorObject } from "./GeneratorParams.ts";
 
 const tolerance = 5e-3;
@@ -22,13 +22,13 @@ Deno.test("should create Instrument Zone", () => {
   const globalZone = createGeneratorObject(bag[0]);
   assertEquals(globalZone.sampleID, undefined);
   assertAlmostEquals(
-    convertTime(globalZone.attackVolEnv ?? 0),
+    timecentToSecond(globalZone.attackVolEnv ?? 0),
     0.123,
     tolerance,
     "attackVolEnv",
   );
   assertAlmostEquals(
-    convertTime(globalZone.decayVolEnv ?? 0),
+    timecentToSecond(globalZone.decayVolEnv ?? 0),
     0.234,
     tolerance,
     "decayVolEnv",

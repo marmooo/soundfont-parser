@@ -159,9 +159,9 @@ export class SoundFont {
       chorusEffectsSend: gen.chorusEffectsSend,
       reverbEffectsSend: gen.reverbEffectsSend,
       pan: gen.pan,
-      delayModLFO: convertTime(gen.delayModLFO),
+      delayModLFO: timecentToSecond(gen.delayModLFO),
       freqModLFO: gen.freqModLFO,
-      delayVibLFO: convertTime(gen.delayVibLFO),
+      delayVibLFO: timecentToSecond(gen.delayVibLFO),
       freqVibLFO: gen.freqVibLFO,
       // delayModEnv: gen.delayModEnv,
       // attackModEnv: gen.attackModEnv,
@@ -169,12 +169,12 @@ export class SoundFont {
       // decayModEnv: gen.decayModEnv,
       // sustainModEnv: gen.sustainModEnv,
       // releaseModEnv: gen.releaseModEnv,
-      modDelay: convertTime(gen.delayModEnv),
-      modAttack: convertTime(gen.attackModEnv),
-      modHold: convertTime(gen.holdModEnv),
-      modDecay: convertTime(gen.decayModEnv),
+      modDelay: timecentToSecond(gen.delayModEnv),
+      modAttack: timecentToSecond(gen.attackModEnv),
+      modHold: timecentToSecond(gen.holdModEnv),
+      modDecay: timecentToSecond(gen.decayModEnv),
       modSustain: gen.sustainModEnv / 1000,
-      modRelease: convertTime(gen.releaseModEnv),
+      modRelease: timecentToSecond(gen.releaseModEnv),
       keynumToModEnvHold: gen.keynumToModEnvHold,
       keynumToModEnvDecay: gen.keynumToModEnvDecay,
       // delayVolEnv: gen.delayVolEnv,
@@ -183,12 +183,12 @@ export class SoundFont {
       // decayVolEnv: gen.decayVolEnv,
       // sustainVolEnv: gen.sustainVolEnv,
       // releaseVolEnv: gen.releaseVolEnv,
-      volDelay: convertTime(gen.delayVolEnv),
-      volAttack: convertTime(gen.attackVolEnv),
-      volHold: convertTime(gen.holdVolEnv),
-      volDecay: convertTime(gen.decayVolEnv),
+      volDelay: timecentToSecond(gen.delayVolEnv),
+      volAttack: timecentToSecond(gen.attackVolEnv),
+      volHold: timecentToSecond(gen.holdVolEnv),
+      volDecay: timecentToSecond(gen.decayVolEnv),
       volSustain: gen.sustainVolEnv / 1000,
-      volRelease: convertTime(gen.releaseVolEnv),
+      volRelease: timecentToSecond(gen.releaseVolEnv),
       keynumToVolEnvHold: gen.keynumToVolEnvHold,
       keynumToVolEnvDecay: gen.keynumToVolEnvDecay,
       // instrument: gen.instrument,
@@ -227,8 +227,7 @@ export class SoundFont {
   }
 }
 
-// value = 1200log2(sec) で表される時間を秒単位に変換する
-export function convertTime(value: number) {
+export function timecentToSecond(value: number) {
   return Math.pow(2, value / 1200);
 }
 
