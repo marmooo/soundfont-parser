@@ -56,6 +56,70 @@ export class SoundFont {
     );
   }
 
+  findInstrumentZone(instrumentID: number, key: number, velocity = 100) {
+    const instrumentGenerators = this.getInstrumentGenerators(instrumentID);
+    let globalZone: Partial<GeneratorParams> | undefined;
+    for (let j = 0; j < instrumentGenerators.length; j++) {
+      const zone = createGeneratorObject(instrumentGenerators[j]);
+      if (zone.sampleID === undefined) {
+        globalZone = zone;
+        continue;
+      }
+      if (zone.keyRange && !zone.keyRange.in(key)) continue;
+      if (zone.velRange && !zone.velRange.in(velocity)) continue;
+      if (globalZone) {
+        return { ...globalZone, ...zone };
+      } else {
+        return zone;
+      }
+    }
+    return;
+  }
+
+  findInstrument(presetHeaderIndex: number, key: number, velocity = 100) {
+    const presetGenerators = this.getPresetGenerators(presetHeaderIndex);
+    let globalZone: Partial<GeneratorParams> | undefined;
+    for (let i = 0; i < presetGenerators.length; i++) {
+      const zone = createGeneratorObject(presetGenerators[i]);
+      if (zone.instrument === undefined) {
+        globalZone = zone;
+        continue;
+      }
+      if (zone.keyRange && !zone.keyRange.in(key)) continue;
+      if (zone.velRange && !zone.velRange.in(velocity)) continue;
+      const instrumentZone = this.findInstrumentZone(
+        zone.instrument,
+        key,
+        velocity,
+      );
+      if (instrumentZone) {
+        if (globalZone) {
+          return this.getInstrument({ ...globalZone, ...zone }, instrumentZone);
+        } else {
+          return this.getInstrument(zone, instrumentZone);
+        }
+      }
+    }
+    return null;
+  }
+
+  getInstrument(
+    presetZone: Partial<GeneratorParams>,
+    instrumentZone: Partial<GeneratorParams>,
+  ) {
+    const instrument = {
+      ...defaultInstrumentZone,
+      ...instrumentZone,
+    };
+    const keys = Object.keys(presetZone) as (keyof GeneratorParams)[];
+    for (const key of keys) {
+      if (key !== "keyRange" && key !== "velRange") {
+        instrument[key] += presetZone[key] as number;
+      }
+    }
+    return instrument;
+  }
+
   getInstrumentKey(
     bankNumber: number,
     instrumentNumber: number,
@@ -73,40 +137,8 @@ export class SoundFont {
       );
       return null;
     }
-
-    const presetGenerators = this.getPresetGenerators(presetHeaderIndex);
-    let globalPresetZone: Partial<GeneratorParams> | undefined;
-    let globalInstrumentZone: Partial<GeneratorParams> | undefined;
-    let targetInstrumentZone: Partial<GeneratorParams> | undefined;
-    for (let i = 0; i < presetGenerators.length; i++) {
-      const presetZone = createGeneratorObject(presetGenerators[i]);
-      if (presetZone.instrument === undefined) {
-        globalPresetZone = presetZone;
-        continue;
-      }
-      if (presetZone.keyRange && !presetZone.keyRange.in(key)) continue;
-      if (presetZone.velRange && !presetZone.velRange.in(velocity)) continue;
-      const instrumentGenerators = this.getInstrumentGenerators(
-        presetZone.instrument,
-      );
-      for (let j = 0; j < instrumentGenerators.length; j++) {
-        const instrumentZone = createGeneratorObject(instrumentGenerators[j]);
-        if (instrumentZone.sampleID === undefined) {
-          globalInstrumentZone = instrumentZone;
-          continue;
-        }
-        if (instrumentZone.keyRange && !instrumentZone.keyRange.in(key)) {
-          continue;
-        }
-        if (instrumentZone.velRange && !instrumentZone.velRange.in(velocity)) {
-          continue;
-        }
-        targetInstrumentZone = instrumentZone;
-        break;
-      }
-      if (targetInstrumentZone) break;
-    }
-    if (!targetInstrumentZone) {
+    const gen = this.findInstrument(presetHeaderIndex, key, velocity);
+    if (!gen) {
       console.warn(
         "instrument not found: bank=%s instrument=%s",
         bankNumber,
@@ -114,17 +146,6 @@ export class SoundFont {
       );
       return null;
     }
-    if (targetInstrumentZone.sampleID === undefined) {
-      throw new Error("Invalid SoundFont: sampleID not found");
-    }
-
-    const gen = {
-      ...defaultInstrumentZone,
-      ...globalPresetZone || {},
-      ...globalInstrumentZone || {},
-      ...targetInstrumentZone,
-    };
-
     const sample = this.parsed.samples[gen.sampleID];
     const sampleHeader = this.parsed.sampleHeaders[gen.sampleID];
     const tune = gen.coarseTune + gen.fineTune / 100;
@@ -133,7 +154,6 @@ export class SoundFont {
       : gen.overridingRootKey;
     const basePitch = tune + sampleHeader.pitchCorrection / 100 - rootKey;
     const scaleTuning = gen.scaleTuning / 100;
-
     return {
       // startAddrsOffset: gen.startAddrsOffset,
       // endAddrsOffset: gen.endAddrsOffset,
