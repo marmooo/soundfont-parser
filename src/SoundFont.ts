@@ -184,7 +184,7 @@ export class SoundFont {
       modEnvToFilterFc: gen.modEnvToFilterFc.clamp(),
       // endAddrsCoarseOffset: gen.endAddrsCoarseOffset.clamp(),
       modLfoToVolume: gen.modLfoToVolume.clamp(),
-      chorusEffectsSend: gen.chorusEffectsSend.clamp(),
+      chorusEffectsSend: gen.chorusEffectsSend.clamp() / 1000,
       reverbEffectsSend: gen.reverbEffectsSend.clamp() / 1000,
       pan: gen.pan.clamp(),
       delayModLFO: timecentToSecond(gen.delayModLFO.clamp()),
