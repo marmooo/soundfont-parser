@@ -185,7 +185,7 @@ export class SoundFont {
       // endAddrsCoarseOffset: gen.endAddrsCoarseOffset.clamp(),
       modLfoToVolume: gen.modLfoToVolume.clamp(),
       chorusEffectsSend: gen.chorusEffectsSend.clamp(),
-      reverbEffectsSend: gen.reverbEffectsSend.clamp(),
+      reverbEffectsSend: gen.reverbEffectsSend.clamp() / 1000,
       pan: gen.pan.clamp(),
       delayModLFO: timecentToSecond(gen.delayModLFO.clamp()),
       freqModLFO: gen.freqModLFO.clamp(),
