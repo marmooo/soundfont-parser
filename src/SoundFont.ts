@@ -4,7 +4,7 @@ import {
   GeneratorParams,
 } from "./GeneratorParams.ts";
 import { ParseResult } from "./Parser.ts";
-import { Bag, GeneratorList, RangeValue } from "./Structs.ts";
+import { Bag, BoundedValue, GeneratorList, RangeValue } from "./Structs.ts";
 
 export class SoundFont {
   parsed: ParseResult;
@@ -88,7 +88,7 @@ export class SoundFont {
       if (zone.keyRange && !zone.keyRange.in(key)) continue;
       if (zone.velRange && !zone.velRange.in(velocity)) continue;
       const instrumentZone = this.findInstrumentZone(
-        zone.instrument,
+        zone.instrument.value,
         key,
         velocity,
       );
@@ -107,14 +107,20 @@ export class SoundFont {
     presetZone: Partial<GeneratorParams>,
     instrumentZone: Partial<GeneratorParams>,
   ) {
-    const instrument = {
+    const instrument: GeneratorParams = {
       ...defaultInstrumentZone,
       ...instrumentZone,
     };
     const keys = Object.keys(presetZone) as (keyof GeneratorParams)[];
     for (const key of keys) {
       if (key !== "keyRange" && key !== "velRange") {
-        instrument[key] += presetZone[key] as number;
+        const instrumentValue = instrument[key] as BoundedValue;
+        const presetValue = presetZone[key] as BoundedValue;
+        instrument[key] = new BoundedValue(
+          instrumentValue.min,
+          instrumentValue.value + presetValue.value,
+          instrumentValue.max,
+        );
       }
     }
     return instrument;
@@ -146,91 +152,93 @@ export class SoundFont {
       );
       return null;
     }
-    const sample = this.parsed.samples[gen.sampleID];
-    const sampleHeader = this.parsed.sampleHeaders[gen.sampleID];
-    const tune = gen.coarseTune + gen.fineTune / 100;
-    const rootKey = gen.overridingRootKey === -1
+    const sample = this.parsed.samples[gen.sampleID.value];
+    const sampleHeader = this.parsed.sampleHeaders[gen.sampleID.value];
+    const tune = gen.coarseTune.clamp() + gen.fineTune.clamp() / 100;
+    const rootKey = gen.overridingRootKey.value === -1
       ? sampleHeader.originalPitch
-      : gen.overridingRootKey;
+      : gen.overridingRootKey.clamp();
     const basePitch = tune + sampleHeader.pitchCorrection / 100 - rootKey;
-    const scaleTuning = gen.scaleTuning / 100;
+    const scaleTuning = gen.scaleTuning.clamp() / 100;
     return {
-      // startAddrsOffset: gen.startAddrsOffset,
-      // endAddrsOffset: gen.endAddrsOffset,
-      start: gen.startAddrsCoarseOffset * 32768 + gen.startAddrsOffset,
-      end: gen.endAddrsCoarseOffset * 32768 + gen.endAddrsOffset,
-      // startloopAddrsOffset: gen.startloopAddrsOffset,
-      // endloopAddrsOffset: gen.endloopAddrsOffset,
+      // startAddrsOffset: gen.startAddrsOffset.clamp(),
+      // endAddrsOffset: gen.endAddrsOffset.clamp(),
+      start: gen.startAddrsCoarseOffset.clamp() * 32768 +
+        gen.startAddrsOffset.clamp(),
+      end: gen.endAddrsCoarseOffset.clamp() * 32768 +
+        gen.endAddrsOffset.clamp(),
+      // startloopAddrsOffset: gen.startloopAddrsOffset.clamp(),
+      // endloopAddrsOffset: gen.endloopAddrsOffset.clamp(),
       loopStart: sampleHeader.loopStart +
-        gen.startloopAddrsCoarseOffset * 32768 +
-        gen.startloopAddrsOffset,
+        gen.startloopAddrsCoarseOffset.clamp() * 32768 +
+        gen.startloopAddrsOffset.clamp(),
       loopEnd: sampleHeader.loopEnd +
-        gen.endloopAddrsCoarseOffset * 32768 +
-        gen.endloopAddrsOffset,
-      modLfoToPitch: gen.modLfoToPitch,
-      vibLfoToPitch: gen.vibLfoToPitch,
-      modEnvToPitch: gen.modEnvToPitch,
-      initialFilterFc: gen.initialFilterFc,
-      initialFilterQ: gen.initialFilterQ,
-      modLfoToFilterFc: gen.modLfoToFilterFc,
-      modEnvToFilterFc: gen.modEnvToFilterFc,
-      // endAddrsCoarseOffset: gen.endAddrsCoarseOffset,
-      modLfoToVolume: gen.modLfoToVolume,
-      chorusEffectsSend: gen.chorusEffectsSend,
-      reverbEffectsSend: gen.reverbEffectsSend,
-      pan: gen.pan,
-      delayModLFO: timecentToSecond(gen.delayModLFO),
-      freqModLFO: gen.freqModLFO,
-      delayVibLFO: timecentToSecond(gen.delayVibLFO),
-      freqVibLFO: gen.freqVibLFO,
-      // delayModEnv: gen.delayModEnv,
-      // attackModEnv: gen.attackModEnv,
-      // holdModEnv: gen.holdModEnv,
-      // decayModEnv: gen.decayModEnv,
-      // sustainModEnv: gen.sustainModEnv,
-      // releaseModEnv: gen.releaseModEnv,
-      modDelay: timecentToSecond(gen.delayModEnv),
-      modAttack: timecentToSecond(gen.attackModEnv),
-      modHold: timecentToSecond(gen.holdModEnv),
-      modDecay: timecentToSecond(gen.decayModEnv),
-      modSustain: gen.sustainModEnv / 1000,
-      modRelease: timecentToSecond(gen.releaseModEnv),
-      keynumToModEnvHold: gen.keynumToModEnvHold,
-      keynumToModEnvDecay: gen.keynumToModEnvDecay,
-      // delayVolEnv: gen.delayVolEnv,
-      // attackVolEnv: gen.attackVolEnv,
-      // holdVolEnv: gen.holdVolEnv,
-      // decayVolEnv: gen.decayVolEnv,
-      // sustainVolEnv: gen.sustainVolEnv,
-      // releaseVolEnv: gen.releaseVolEnv,
-      volDelay: timecentToSecond(gen.delayVolEnv),
-      volAttack: timecentToSecond(gen.attackVolEnv),
-      volHold: timecentToSecond(gen.holdVolEnv),
-      volDecay: timecentToSecond(gen.decayVolEnv),
-      volSustain: gen.sustainVolEnv / 1000,
-      volRelease: timecentToSecond(gen.releaseVolEnv),
-      keynumToVolEnvHold: gen.keynumToVolEnvHold,
-      keynumToVolEnvDecay: gen.keynumToVolEnvDecay,
-      // instrument: gen.instrument,
+        gen.endloopAddrsCoarseOffset.clamp() * 32768 +
+        gen.endloopAddrsOffset.clamp(),
+      modLfoToPitch: gen.modLfoToPitch.clamp(),
+      vibLfoToPitch: gen.vibLfoToPitch.clamp(),
+      modEnvToPitch: gen.modEnvToPitch.clamp(),
+      initialFilterFc: gen.initialFilterFc.clamp(),
+      initialFilterQ: gen.initialFilterQ.clamp(),
+      modLfoToFilterFc: gen.modLfoToFilterFc.clamp(),
+      modEnvToFilterFc: gen.modEnvToFilterFc.clamp(),
+      // endAddrsCoarseOffset: gen.endAddrsCoarseOffset.clamp(),
+      modLfoToVolume: gen.modLfoToVolume.clamp(),
+      chorusEffectsSend: gen.chorusEffectsSend.clamp(),
+      reverbEffectsSend: gen.reverbEffectsSend.clamp(),
+      pan: gen.pan.clamp(),
+      delayModLFO: timecentToSecond(gen.delayModLFO.clamp()),
+      freqModLFO: gen.freqModLFO.clamp(),
+      delayVibLFO: timecentToSecond(gen.delayVibLFO.clamp()),
+      freqVibLFO: gen.freqVibLFO.clamp(),
+      // delayModEnv: gen.delayModEnv.clamp(),
+      // attackModEnv: gen.attackModEnv.clamp(),
+      // holdModEnv: gen.holdModEnv.clamp(),
+      // decayModEnv: gen.decayModEnv.clamp(),
+      // sustainModEnv: gen.sustainModEnv.clamp(),
+      // releaseModEnv: gen.releaseModEnv.clamp(),
+      modDelay: timecentToSecond(gen.delayModEnv.clamp()),
+      modAttack: timecentToSecond(gen.attackModEnv.clamp()),
+      modHold: timecentToSecond(gen.holdModEnv.clamp()),
+      modDecay: timecentToSecond(gen.decayModEnv.clamp()),
+      modSustain: gen.sustainModEnv.clamp() / 1000,
+      modRelease: timecentToSecond(gen.releaseModEnv.clamp()),
+      keynumToModEnvHold: gen.keynumToModEnvHold.clamp(),
+      keynumToModEnvDecay: gen.keynumToModEnvDecay.clamp(),
+      // delayVolEnv: gen.delayVolEnv.clamp(),
+      // attackVolEnv: gen.attackVolEnv.clamp(),
+      // holdVolEnv: gen.holdVolEnv.clamp(),
+      // decayVolEnv: gen.decayVolEnv.clamp(),
+      // sustainVolEnv: gen.sustainVolEnv.clamp(),
+      // releaseVolEnv: gen.releaseVolEnv.clamp(),
+      volDelay: timecentToSecond(gen.delayVolEnv.clamp()),
+      volAttack: timecentToSecond(gen.attackVolEnv.clamp()),
+      volHold: timecentToSecond(gen.holdVolEnv.clamp()),
+      volDecay: timecentToSecond(gen.decayVolEnv.clamp()),
+      volSustain: gen.sustainVolEnv.clamp() / 1000,
+      volRelease: timecentToSecond(gen.releaseVolEnv.clamp()),
+      keynumToVolEnvHold: gen.keynumToVolEnvHold.clamp(),
+      keynumToVolEnvDecay: gen.keynumToVolEnvDecay.clamp(),
+      // instrument: gen.instrument.clamp(),
       keyRange: gen.keyRange,
       velRange: gen.velRange,
       // startloopAddrsCoarseOffset: gen.startloopAddrsCoarseOffset,
-      keynum: gen.keynum,
-      velocity: gen.velocity,
-      initialAttenuation: gen.initialAttenuation,
-      // endloopAddrsCoarseOffset: gen.endloopAddrsCoarseOffset,
-      // coarseTune: gen.coarseTune,
-      // fineTune: gen.fineTune,
+      keynum: gen.keynum.clamp(),
+      velocity: gen.velocity.clamp(),
+      initialAttenuation: gen.initialAttenuation.clamp(),
+      // endloopAddrsCoarseOffset: gen.endloopAddrsCoarseOffset.clamp(),
+      // coarseTune: gen.coarseTune.clamp(),
+      // fineTune: gen.fineTune.clamp(),
       playbackRate: (key: number) =>
         Math.pow(Math.pow(2, 1 / 12), (key + basePitch) * scaleTuning),
-      // sampleID: gen.sampleID,
+      // sampleID: gen.sampleID.clamp(),
       sample,
       sampleRate: sampleHeader.sampleRate,
       sampleName: sampleHeader.sampleName,
-      sampleModes: gen.sampleModes,
+      sampleModes: gen.sampleModes.clamp(),
       // scaleTuning,
-      exclusiveClass: gen.exclusiveClass,
-      // overridingRootKey: gen.overridingRootKey,
+      exclusiveClass: gen.exclusiveClass.clamp(),
+      // overridingRootKey: gen.overridingRootKey.clamp(),
     };
   }
 

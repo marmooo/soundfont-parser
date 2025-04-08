@@ -22,13 +22,13 @@ Deno.test("should create Instrument Zone", () => {
   const globalZone = createGeneratorObject(bag[0]);
   assertEquals(globalZone.sampleID, undefined);
   assertAlmostEquals(
-    timecentToSecond(globalZone.attackVolEnv ?? 0),
+    timecentToSecond(globalZone.attackVolEnv?.value ?? 0),
     0.123,
     tolerance,
     "attackVolEnv",
   );
   assertAlmostEquals(
-    timecentToSecond(globalZone.decayVolEnv ?? 0),
+    timecentToSecond(globalZone.decayVolEnv?.value ?? 0),
     0.234,
     tolerance,
     "decayVolEnv",

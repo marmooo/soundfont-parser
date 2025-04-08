@@ -262,3 +262,19 @@ export const SampleLink = {
   RomLeftSample: 0x8004,
   RomLinkedSample: 0x8008,
 };
+
+export class BoundedValue {
+  min: number;
+  max: number;
+  value: number;
+
+  constructor(min: number, value: number, max: number) {
+    this.min = min;
+    this.value = value;
+    this.max = max;
+  }
+
+  clamp(): number {
+    return Math.max(this.min, Math.min(this.value, this.max));
+  }
+}
