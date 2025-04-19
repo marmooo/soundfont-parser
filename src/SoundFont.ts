@@ -152,6 +152,9 @@ export class SoundFont {
       );
       return null;
     }
+    const modHold = timecentToSecond(
+      gen.holdModEnv.clamp() + (key - 60) * gen.keynumToModEnvHold.clamp(),
+    );
     const sample = this.parsed.samples[gen.sampleID.value];
     const sampleHeader = this.parsed.sampleHeaders[gen.sampleID.value];
     const tune = gen.coarseTune.clamp() + gen.fineTune.clamp() / 100;
@@ -199,11 +202,11 @@ export class SoundFont {
       // releaseModEnv: gen.releaseModEnv.clamp(),
       modDelay: timecentToSecond(gen.delayModEnv.clamp()),
       modAttack: timecentToSecond(gen.attackModEnv.clamp()),
-      modHold: timecentToSecond(gen.holdModEnv.clamp()),
+      modHold,
       modDecay: timecentToSecond(gen.decayModEnv.clamp()),
       modSustain: gen.sustainModEnv.clamp() / 1000,
       modRelease: timecentToSecond(gen.releaseModEnv.clamp()),
-      keynumToModEnvHold: gen.keynumToModEnvHold.clamp(),
+      // keynumToModEnvHold: gen.keynumToModEnvHold.clamp(),
       keynumToModEnvDecay: gen.keynumToModEnvDecay.clamp(),
       // delayVolEnv: gen.delayVolEnv.clamp(),
       // attackVolEnv: gen.attackVolEnv.clamp(),
@@ -296,7 +299,7 @@ export interface NoteInfo {
   modDecay: number;
   modSustain: number;
   modRelease: number;
-  keynumToModEnvHold: number;
+  // keynumToModEnvHold: number;
   keynumToModEnvDecay: number;
   // delayVolEnv: number;
   // attackVolEnv: number;
