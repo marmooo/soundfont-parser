@@ -158,6 +158,9 @@ export class SoundFont {
     const modDecay = timecentToSecond(
       gen.decayModEnv.clamp() + (key - 60) * gen.keynumToModEnvDecay.clamp(),
     );
+    const volHold = timecentToSecond(
+      gen.holdVolEnv.clamp() + (key - 60) * gen.keynumToVolEnvHold.clamp(),
+    );
     const sample = this.parsed.samples[gen.sampleID.value];
     const sampleHeader = this.parsed.sampleHeaders[gen.sampleID.value];
     const tune = gen.coarseTune.clamp() + gen.fineTune.clamp() / 100;
@@ -219,11 +222,11 @@ export class SoundFont {
       // releaseVolEnv: gen.releaseVolEnv.clamp(),
       volDelay: timecentToSecond(gen.delayVolEnv.clamp()),
       volAttack: timecentToSecond(gen.attackVolEnv.clamp()),
-      volHold: timecentToSecond(gen.holdVolEnv.clamp()),
+      volHold,
       volDecay: timecentToSecond(gen.decayVolEnv.clamp()),
       volSustain: gen.sustainVolEnv.clamp() / 1000,
       volRelease: timecentToSecond(gen.releaseVolEnv.clamp()),
-      keynumToVolEnvHold: gen.keynumToVolEnvHold.clamp(),
+      // keynumToVolEnvHold: gen.keynumToVolEnvHold.clamp(),
       keynumToVolEnvDecay: gen.keynumToVolEnvDecay.clamp(),
       // instrument: gen.instrument.clamp(),
       keyRange: gen.keyRange,
@@ -316,7 +319,7 @@ export interface NoteInfo {
   volDecay: number;
   volSustain: number;
   volRelease: number;
-  keynumToVolEnvHold: number;
+  // keynumToVolEnvHold: number;
   keynumToVolEnvDecay: number;
   // instrument: number;
   keyRange: RangeValue;
