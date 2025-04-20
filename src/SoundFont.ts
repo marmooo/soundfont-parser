@@ -56,7 +56,7 @@ export class SoundFont {
     );
   }
 
-  findInstrumentZone(instrumentID: number, key: number, velocity = 100) {
+  findInstrumentZone(instrumentID: number, key: number, velocity: number) {
     const instrumentGenerators = this.getInstrumentGenerators(instrumentID);
     let globalZone: Partial<GeneratorParams> | undefined;
     for (let j = 0; j < instrumentGenerators.length; j++) {
@@ -76,7 +76,7 @@ export class SoundFont {
     return;
   }
 
-  findInstrument(presetHeaderIndex: number, key: number, velocity = 100) {
+  findInstrument(presetHeaderIndex: number, key: number, velocity: number) {
     const presetGenerators = this.getPresetGenerators(presetHeaderIndex);
     let globalZone: Partial<GeneratorParams> | undefined;
     for (let i = 0; i < presetGenerators.length; i++) {
@@ -130,7 +130,7 @@ export class SoundFont {
     bankNumber: number,
     instrumentNumber: number,
     key: number,
-    velocity = 100,
+    velocity: number,
   ): NoteInfo | null {
     const presetHeaderIndex = this.parsed.presetHeaders.findIndex(
       (p) => p.preset === instrumentNumber && p.bank === bankNumber,
