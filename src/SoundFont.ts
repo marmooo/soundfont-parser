@@ -4,7 +4,7 @@ import {
   GeneratorParams,
 } from "./GeneratorParams.ts";
 import { ParseResult } from "./Parser.ts";
-import { Bag, BoundedValue, GeneratorList, RangeValue } from "./Structs.ts";
+import { Bag, BoundedValue, GeneratorList } from "./Structs.ts";
 
 export class SoundFont {
   parsed: ParseResult;
@@ -232,11 +232,11 @@ export class SoundFont {
       // keynumToVolEnvHold: gen.keynumToVolEnvHold.clamp(),
       // keynumToVolEnvDecay: gen.keynumToVolEnvDecay.clamp(),
       // instrument: gen.instrument.clamp(),
-      keyRange: gen.keyRange,
-      velRange: gen.velRange,
+      // keyRange: gen.keyRange,
+      // velRange: gen.velRange,
       // startloopAddrsCoarseOffset: gen.startloopAddrsCoarseOffset,
-      keynum: gen.keynum.clamp(),
-      velocity: gen.velocity.clamp(),
+      // keynum: gen.keynum.clamp(),
+      // velocity: gen.velocity.clamp(),
       initialAttenuation: gen.initialAttenuation.clamp(),
       // endloopAddrsCoarseOffset: gen.endloopAddrsCoarseOffset.clamp(),
       // coarseTune: gen.coarseTune.clamp(),
@@ -325,11 +325,11 @@ export interface NoteInfo {
   // keynumToVolEnvHold: number;
   // keynumToVolEnvDecay: number;
   // instrument: number;
-  keyRange: RangeValue;
-  velRange: RangeValue;
+  // keyRange: RangeValue;
+  // velRange: RangeValue;
   // startloopAddrsCoarseOffset: number;
-  keynum: number;
-  velocity: number;
+  // keynum: number;
+  // velocity: number;
   initialAttenuation: number;
   // endloopAddrsCoarseOffset: number;
   // coarseTune: number;

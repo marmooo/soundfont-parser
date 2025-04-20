@@ -41,8 +41,6 @@ Deno.test("should create InstrumentKey", () => {
   const key = soundFont.getInstrumentKey(0, 0, 40, 100)!;
   assertNotEquals(key, null);
   assertEquals(key.sampleName, "crash");
-  assertEquals(key.keyRange.lo, 40);
-  assertEquals(key.keyRange.hi, 40);
 
   assertAlmostEquals(key.volAttack, 0.2, tolerance, "volAttack");
   assertAlmostEquals(key.volDecay, 0.4, tolerance, "volDecay");
