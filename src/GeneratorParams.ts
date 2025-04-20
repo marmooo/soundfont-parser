@@ -7,6 +7,10 @@ export type GeneratorParams = {
   [key in AllowedKeys]: key extends "keyRange" | "velRange" ? RangeValue
     : BoundedValue;
 };
+const fixedGenerators = [
+  ["keynum", "keyRange"],
+  ["velocity", "velRange"],
+] as const;
 
 export function createGeneratorObject(generators: GeneratorList[]) {
   const result: Partial<GeneratorParams> = {};
@@ -22,6 +26,12 @@ export function createGeneratorObject(generators: GeneratorList[]) {
         gen.value as number,
         defaultValue.max,
       );
+    }
+  }
+  for (const [src, dst] of fixedGenerators) {
+    const v = result[src];
+    if (v instanceof BoundedValue && 0 <= v.value) {
+      result[dst] = new RangeValue(v.value, v.value);
     }
   }
   return result;
