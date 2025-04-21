@@ -112,16 +112,16 @@ export class SoundFont {
       ...instrumentZone,
     };
     const keys = Object.keys(presetZone) as (keyof GeneratorParams)[];
-    for (const key of keys) {
-      if (key !== "keyRange" && key !== "velRange") {
-        const instrumentValue = instrument[key] as BoundedValue;
-        const presetValue = presetZone[key] as BoundedValue;
-        instrument[key] = new BoundedValue(
-          instrumentValue.min,
-          instrumentValue.value + presetValue.value,
-          instrumentValue.max,
-        );
-      }
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      if (key === "keyRange" || key === "velRange") continue;
+      const instrumentValue = instrument[key] as BoundedValue;
+      const presetValue = presetZone[key] as BoundedValue;
+      instrument[key] = new BoundedValue(
+        instrumentValue.min,
+        instrumentValue.value + presetValue.value,
+        instrumentValue.max,
+      );
     }
     return instrument;
   }
@@ -257,12 +257,14 @@ export class SoundFont {
   // presetNames[bankNumber][presetNumber] = presetName
   getPresetNames() {
     const bank: { [index: number]: { [index: number]: string } } = {};
-    this.parsed.presetHeaders.forEach((preset) => {
+    const presetHeaders = this.parsed.presetHeaders;
+    for (let i = 0; i < presetHeaders.length; i++) {
+      const preset = presetHeaders[i];
       if (!bank[preset.bank]) {
         bank[preset.bank] = {};
       }
       bank[preset.bank][preset.preset] = preset.presetName;
-    });
+    }
     return bank;
   }
 }

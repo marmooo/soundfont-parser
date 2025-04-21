@@ -14,7 +14,8 @@ const fixedGenerators = [
 
 export function createGeneratorObject(generators: GeneratorList[]) {
   const result: Partial<GeneratorParams> = {};
-  for (const gen of generators) {
+  for (let i = 0; i < generators.length; i++) {
+    const gen = generators[i];
     const type = gen.type;
     if (type === undefined) continue;
     if (type === "keyRange" || type === "velRange") {
@@ -28,7 +29,8 @@ export function createGeneratorObject(generators: GeneratorList[]) {
       );
     }
   }
-  for (const [src, dst] of fixedGenerators) {
+  for (let i = 0; i < fixedGenerators.length; i++) {
+    const [src, dst] = fixedGenerators[i];
     const v = result[src];
     if (v instanceof BoundedValue && 0 <= v.value) {
       result[dst] = new RangeValue(v.value, v.value);
