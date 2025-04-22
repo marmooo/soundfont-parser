@@ -5,7 +5,7 @@ import {
 } from "jsr:@std/assert";
 import { parse } from "./Parser.ts";
 import { SoundFont, timecentToSecond } from "./SoundFont.ts";
-import { createGeneratorObject } from "./GeneratorParams.ts";
+import { createInstrumentGeneratorObject } from "./GeneratorParams.ts";
 
 const tolerance = 5e-3;
 const input = Deno.readFileSync("./fixture/TestSoundFont.sf2");
@@ -19,7 +19,7 @@ Deno.test("should create Preset Zone", () => {
 Deno.test("should create Instrument Zone", () => {
   const bag = soundFont.getInstrumentGenerators(1);
 
-  const globalZone = createGeneratorObject(bag[0]);
+  const globalZone = createInstrumentGeneratorObject(bag[0]);
   assertEquals(globalZone.sampleID, undefined);
   assertAlmostEquals(
     timecentToSecond(globalZone.attackVolEnv?.value ?? 0),
@@ -34,7 +34,7 @@ Deno.test("should create Instrument Zone", () => {
     "decayVolEnv",
   );
 
-  const instrumentZone = createGeneratorObject(bag[1]);
+  const instrumentZone = createInstrumentGeneratorObject(bag[1]);
   assertNotEquals(instrumentZone.sampleID, undefined);
 });
 Deno.test("should create InstrumentKey", () => {

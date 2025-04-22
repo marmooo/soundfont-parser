@@ -1,7 +1,9 @@
 import {
-  createGeneratorObject,
+  createInstrumentGeneratorObject,
+  createPresetGeneratorObject,
   defaultInstrumentZone,
-  GeneratorParams,
+  InstrumentGeneratorParams,
+  PresetGeneratorParams,
 } from "./GeneratorParams.ts";
 import { ParseResult } from "./Parser.ts";
 import { Bag, BoundedValue, GeneratorList } from "./Structs.ts";
@@ -58,9 +60,9 @@ export class SoundFont {
 
   findInstrumentZone(instrumentID: number, key: number, velocity: number) {
     const instrumentGenerators = this.getInstrumentGenerators(instrumentID);
-    let globalZone: Partial<GeneratorParams> | undefined;
+    let globalZone: Partial<InstrumentGeneratorParams> | undefined;
     for (let j = 0; j < instrumentGenerators.length; j++) {
-      const zone = createGeneratorObject(instrumentGenerators[j]);
+      const zone = createInstrumentGeneratorObject(instrumentGenerators[j]);
       if (zone.sampleID === undefined) {
         globalZone = zone;
         continue;
@@ -78,9 +80,9 @@ export class SoundFont {
 
   findInstrument(presetHeaderIndex: number, key: number, velocity: number) {
     const presetGenerators = this.getPresetGenerators(presetHeaderIndex);
-    let globalZone: Partial<GeneratorParams> | undefined;
+    let globalZone: Partial<PresetGeneratorParams> | undefined;
     for (let i = 0; i < presetGenerators.length; i++) {
-      const zone = createGeneratorObject(presetGenerators[i]);
+      const zone = createPresetGeneratorObject(presetGenerators[i]);
       if (zone.instrument === undefined) {
         globalZone = zone;
         continue;
@@ -104,22 +106,22 @@ export class SoundFont {
   }
 
   getInstrument(
-    presetZone: Partial<GeneratorParams>,
-    instrumentZone: Partial<GeneratorParams>,
+    presetZone: Partial<PresetGeneratorParams>,
+    instrumentZone: Partial<InstrumentGeneratorParams>,
   ) {
-    const instrument: GeneratorParams = {
+    const instrument: InstrumentGeneratorParams = {
       ...defaultInstrumentZone,
       ...instrumentZone,
     };
-    const keys = Object.keys(presetZone) as (keyof GeneratorParams)[];
+    const keys = Object.keys(presetZone) as (keyof PresetGeneratorParams)[];
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i];
       if (key === "keyRange" || key === "velRange") continue;
       const instrumentValue = instrument[key] as BoundedValue;
-      const presetValue = presetZone[key] as BoundedValue;
+      const presetValue = presetZone[key];
       instrument[key] = new BoundedValue(
         instrumentValue.min,
-        instrumentValue.value + presetValue.value,
+        instrumentValue.value + (presetValue as BoundedValue).value,
         instrumentValue.max,
       );
     }

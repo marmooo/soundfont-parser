@@ -1,10 +1,42 @@
 import { GeneratorEnumeratorTable } from "./Constants.ts";
 import { BoundedValue, GeneratorList, RangeValue } from "./Structs.ts";
 
-type RawAllowedKeys = typeof GeneratorEnumeratorTable[number];
-type AllowedKeys = Exclude<RawAllowedKeys, undefined>;
-export type GeneratorParams = {
-  [key in AllowedKeys]: key extends "keyRange" | "velRange" ? RangeValue
+type GeneratorName = typeof GeneratorEnumeratorTable[number];
+type GeneratorIndex = number;
+const generatorNameToIndex = new Map<GeneratorName, GeneratorIndex>(
+  GeneratorEnumeratorTable.map((name, i) => [name, i]),
+);
+const presetExcludedNames = [
+  "startAddrsOffset",
+  "endAddrsOffset",
+  "startloopAddrsOffset",
+  "endloopAddrsOffset",
+  "startAddrsCoarseOffset",
+  "endAddrsCoarseOffset",
+  "startloopAddrsCoarseOffset",
+  "endloopAddrsCoarseOffset",
+  "keynum",
+  "velocity",
+  "sampleModes",
+  "exclusiveClass",
+  "overridingRootKey",
+] as const;
+const presetExcludedIndices = new Set<number>(
+  presetExcludedNames
+    .map((name) => generatorNameToIndex.get(name as GeneratorName)!),
+);
+
+type AllGeneratorKeys = typeof GeneratorEnumeratorTable[number];
+type InstrumentAllowedKeys = Exclude<AllGeneratorKeys, undefined>;
+type PresetExcludedKeys = typeof presetExcludedNames[number];
+type PresetAllowedKeys = Exclude<InstrumentAllowedKeys, PresetExcludedKeys>;
+export type InstrumentGeneratorParams = {
+  [key in InstrumentAllowedKeys]: key extends "keyRange" | "velRange"
+    ? RangeValue
+    : BoundedValue;
+};
+export type PresetGeneratorParams = {
+  [key in PresetAllowedKeys]: key extends "keyRange" | "velRange" ? RangeValue
     : BoundedValue;
 };
 const fixedGenerators = [
@@ -12,8 +44,30 @@ const fixedGenerators = [
   ["velocity", "velRange"],
 ] as const;
 
-export function createGeneratorObject(generators: GeneratorList[]) {
-  const result: Partial<GeneratorParams> = {};
+export function createPresetGeneratorObject(generators: GeneratorList[]) {
+  const result: Partial<PresetGeneratorParams> = {};
+  for (let i = 0; i < generators.length; i++) {
+    const gen = generators[i];
+    const type = gen.type;
+    if (type === undefined) continue;
+    if (presetExcludedIndices.has(gen.code)) continue;
+    if (type === "keyRange" || type === "velRange") {
+      result[type] = gen.value as RangeValue;
+    } else {
+      const key = type as Exclude<PresetAllowedKeys, "keyRange" | "velRange">;
+      const defaultValue = defaultInstrumentZone[key] as BoundedValue;
+      result[key] = new BoundedValue(
+        defaultValue.min,
+        gen.value as number,
+        defaultValue.max,
+      );
+    }
+  }
+  return result;
+}
+
+export function createInstrumentGeneratorObject(generators: GeneratorList[]) {
+  const result: Partial<InstrumentGeneratorParams> = {};
   for (let i = 0; i < generators.length; i++) {
     const gen = generators[i];
     const type = gen.type;
@@ -21,7 +75,7 @@ export function createGeneratorObject(generators: GeneratorList[]) {
     if (type === "keyRange" || type === "velRange") {
       result[type] = gen.value as RangeValue;
     } else {
-      const defaultValue = defaultInstrumentZone[type];
+      const defaultValue = defaultInstrumentZone[type] as BoundedValue;
       result[type] = new BoundedValue(
         defaultValue.min,
         gen.value as number,
@@ -41,7 +95,7 @@ export function createGeneratorObject(generators: GeneratorList[]) {
 
 const int16min = -32768;
 const int16max = 32767;
-export const defaultInstrumentZone: GeneratorParams = {
+export const defaultInstrumentZone: InstrumentGeneratorParams = {
   startAddrsOffset: new BoundedValue(0, 0, int16max),
   endAddrsOffset: new BoundedValue(int16min, 0, 0),
   startloopAddrsOffset: new BoundedValue(int16min, 0, int16max),
