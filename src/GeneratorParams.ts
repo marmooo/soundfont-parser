@@ -27,7 +27,7 @@ const presetExcludedIndices = new Set<number>(
 );
 
 type AllGeneratorKeys = typeof GeneratorEnumeratorTable[number];
-type InstrumentAllowedKeys = Exclude<AllGeneratorKeys, undefined>;
+export type InstrumentAllowedKeys = Exclude<AllGeneratorKeys, undefined>;
 type PresetExcludedKeys = typeof presetExcludedNames[number];
 type PresetAllowedKeys = Exclude<InstrumentAllowedKeys, PresetExcludedKeys>;
 export type InstrumentGeneratorParams = {
