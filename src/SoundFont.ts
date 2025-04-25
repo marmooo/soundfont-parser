@@ -2,18 +2,13 @@ import {
   createInstrumentGeneratorObject,
   createPresetGeneratorObject,
   defaultInstrumentZone,
-  InstrumentAllowedKeys,
   InstrumentGeneratorParams,
+  InstrumentParams,
+  isRangeGenerator,
   PresetGeneratorParams,
 } from "./GeneratorParams.ts";
 import { ParseResult } from "./Parser.ts";
-import { Bag, BoundedValue, GeneratorList, RangeValue } from "./Structs.ts";
-
-type InstrumentParams = {
-  [key in InstrumentAllowedKeys]: key extends "keyRange" | "velRange"
-    ? RangeValue
-    : number;
-};
+import { Bag, BoundedValue, GeneratorList } from "./Structs.ts";
 
 export class SoundFont {
   parsed: ParseResult;
@@ -123,7 +118,7 @@ export class SoundFont {
     const keys = Object.keys(presetZone) as (keyof PresetGeneratorParams)[];
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i];
-      if (key === "keyRange" || key === "velRange") continue;
+      if (isRangeGenerator(key)) continue;
       const instrumentValue = instrument[key] as BoundedValue;
       const presetValue = presetZone[key];
       instrument[key] = new BoundedValue(
@@ -165,7 +160,7 @@ export class SoundFont {
     const keys = Object.keys(gen) as (keyof InstrumentGeneratorParams)[];
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i];
-      if (key === "keyRange" || key === "velRange") {
+      if (isRangeGenerator(key)) {
         clamped[key] = gen[key];
       } else {
         clamped[key] = gen[key].clamp();
