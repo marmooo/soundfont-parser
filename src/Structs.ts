@@ -32,7 +32,10 @@ export class Info {
 
   static parse(data: Uint8Array, chunks: Chunk[]) {
     function getChunk(type: string) {
-      return chunks.find((c) => c.type === type);
+      for (let i = 0; i < chunks.length; i++) {
+        if (chunks[i].type === type) return chunks[i];
+      }
+      return undefined;
     }
 
     function toStream(chunk: Chunk) {
