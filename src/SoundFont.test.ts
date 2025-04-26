@@ -5,7 +5,7 @@ import {
 } from "jsr:@std/assert";
 import { parse } from "./Parser.ts";
 import { SoundFont, timecentToSecond } from "./SoundFont.ts";
-import { createInstrumentGeneratorObject } from "./GeneratorParams.ts";
+import { createInstrumentGeneratorObject } from "./Generator.ts";
 
 const tolerance = 5e-3;
 const input = Deno.readFileSync("./fixture/TestSoundFont.sf2");

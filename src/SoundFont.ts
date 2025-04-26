@@ -6,7 +6,7 @@ import {
   InstrumentParams,
   isRangeGenerator,
   PresetGeneratorParams,
-} from "./GeneratorParams.ts";
+} from "./Generator.ts";
 import { ParseResult } from "./Parser.ts";
 import { Bag, BoundedValue, GeneratorList } from "./Structs.ts";
 
