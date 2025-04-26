@@ -3,29 +3,32 @@ import Stream from "./Stream.ts";
 import { Chunk } from "./RiffParser.ts";
 
 export class VersionTag {
-  major!: number;
-  minor!: number;
+  constructor(
+    public major: number,
+    public minor: number,
+  ) {}
 
   static parse(stream: Stream) {
-    const v = new VersionTag();
-    v.major = stream.readInt8();
-    v.minor = stream.readInt8();
-    return v;
+    const major = stream.readInt8();
+    const minor = stream.readInt8();
+    return new VersionTag(major, minor);
   }
 }
 
 export class Info {
-  comment!: string | null;
-  copyright!: string | null;
-  creationDate!: string | null;
-  engineer!: string | null;
-  name!: string;
-  product!: string | null;
-  software!: string | null;
-  version!: VersionTag;
-  soundEngine!: string;
-  romName!: string | null;
-  romVersion!: VersionTag | null;
+  constructor(
+    public comment: string | null,
+    public copyright: string | null,
+    public creationDate: string | null,
+    public engineer: string | null,
+    public name: string,
+    public product: string | null,
+    public software: string | null,
+    public version: VersionTag,
+    public soundEngine: string,
+    public romName: string | null,
+    public romVersion: VersionTag | null,
+  ) {}
 
   static parse(data: Uint8Array, chunks: Chunk[]) {
     function getChunk(type: string) {
@@ -38,71 +41,88 @@ export class Info {
 
     function readString(type: string) {
       const chunk = getChunk(type);
-      if (!chunk) {
-        return null;
-      }
+      if (!chunk) return null;
       return toStream(chunk).readString(chunk.size);
     }
 
     function readVersionTag(type: string) {
       const chunk = getChunk(type);
-      if (!chunk) {
-        return null;
-      }
+      if (!chunk) return null;
       return VersionTag.parse(toStream(chunk));
     }
 
-    const info = new Info();
-    info.comment = readString("ICMT");
-    info.copyright = readString("ICOP");
-    info.creationDate = readString("ICRD");
-    info.engineer = readString("IENG");
-    info.name = readString("INAM")!;
-    info.product = readString("IPRD");
-    info.software = readString("ISFT");
-    info.version = readVersionTag("ifil")!;
-    info.soundEngine = readString("isng")!;
-    info.romName = readString("irom");
-    info.romVersion = readVersionTag("iver");
-    return info;
+    const comment = readString("ICMT");
+    const copyright = readString("ICOP");
+    const creationDate = readString("ICRD");
+    const engineer = readString("IENG");
+    const name = readString("INAM")!;
+    const product = readString("IPRD");
+    const software = readString("ISFT");
+    const version = readVersionTag("ifil")!;
+    const soundEngine = readString("isng")!;
+    const romName = readString("irom");
+    const romVersion = readVersionTag("iver");
+    return new Info(
+      comment,
+      copyright,
+      creationDate,
+      engineer,
+      name,
+      product,
+      software,
+      version,
+      soundEngine,
+      romName,
+      romVersion,
+    );
   }
 }
 
 export class Bag {
-  generatorIndex!: number;
-  modulatorIndex!: number;
+  constructor(
+    public generatorIndex: number,
+    public modulatorIndex: number,
+  ) {}
 
   static parse(stream: Stream) {
-    const t = new Bag();
-    t.generatorIndex = stream.readWORD();
-    t.modulatorIndex = stream.readWORD();
-    return t;
+    const generatorIndex = stream.readWORD();
+    const modulatorIndex = stream.readWORD();
+    return new Bag(generatorIndex, modulatorIndex);
   }
 }
 
 export class PresetHeader {
-  presetName!: string;
-  preset!: number;
-  bank!: number;
-  presetBagIndex!: number;
-  library!: number;
-  genre!: number;
-  morphology!: number;
+  constructor(
+    public presetName: string,
+    public preset: number,
+    public bank: number,
+    public presetBagIndex: number,
+    public library: number,
+    public genre: number,
+    public morphology: number,
+  ) {}
 
   get isEnd() {
     return this.presetName === "EOP";
   }
 
   static parse(stream: Stream) {
-    const p = new PresetHeader();
-    p.presetName = stream.readString(20);
-    p.preset = stream.readWORD();
-    p.bank = stream.readWORD();
-    p.presetBagIndex = stream.readWORD();
-    p.library = stream.readDWORD();
-    p.genre = stream.readDWORD();
-    p.morphology = stream.readDWORD();
-    return p;
+    const presetName = stream.readString(20);
+    const preset = stream.readWORD();
+    const bank = stream.readWORD();
+    const presetBagIndex = stream.readWORD();
+    const library = stream.readDWORD();
+    const genre = stream.readDWORD();
+    const morphology = stream.readDWORD();
+    return new PresetHeader(
+      presetName,
+      preset,
+      bank,
+      presetBagIndex,
+      library,
+      genre,
+      morphology,
+    );
   }
 }
 
@@ -120,16 +140,20 @@ export class RangeValue {
   }
 
   static parse(stream: Stream) {
-    return new RangeValue(stream.readByte(), stream.readByte());
+    const lo = stream.readByte();
+    const hi = stream.readByte();
+    return new RangeValue(lo, hi);
   }
 }
 
 export class ModulatorList {
-  sourceOper!: number;
-  destinationOper!: number;
-  value!: number | RangeValue;
-  amountSourceOper!: number;
-  transOper!: number;
+  constructor(
+    public sourceOper: number,
+    public destinationOper: number,
+    public value: number | RangeValue,
+    public amountSourceOper: number,
+    public transOper: number,
+  ) {}
 
   get type() {
     return GeneratorEnumeratorTable[this.destinationOper];
@@ -146,31 +170,38 @@ export class ModulatorList {
   }
 
   static parse(stream: Stream) {
-    const t = new ModulatorList();
+    const sourceOper = stream.readWORD();
+    const destinationOper = stream.readWORD();
+    const type = GeneratorEnumeratorTable[destinationOper];
 
-    t.sourceOper = stream.readWORD();
-    t.destinationOper = stream.readWORD();
-
-    switch (t.type) {
+    let value: number | RangeValue;
+    switch (type) {
       case "keyRange":
       case "velRange":
-        t.value = RangeValue.parse(stream);
+        value = RangeValue.parse(stream);
         break;
       default:
-        t.value = stream.readInt16();
+        value = stream.readInt16();
         break;
     }
+    const amountSourceOper = stream.readWORD();
+    const transOper = stream.readWORD();
 
-    t.amountSourceOper = stream.readWORD();
-    t.transOper = stream.readWORD();
-
-    return t;
+    return new ModulatorList(
+      sourceOper,
+      destinationOper,
+      value,
+      amountSourceOper,
+      transOper,
+    );
   }
 }
 
 export class GeneratorList {
-  code!: number;
-  value!: number | RangeValue;
+  constructor(
+    public code: number,
+    public value: number | RangeValue,
+  ) {}
 
   get type() {
     return GeneratorEnumeratorTable[this.code];
@@ -181,20 +212,21 @@ export class GeneratorList {
   }
 
   static parse(stream: Stream) {
-    const t = new GeneratorList();
-    t.code = stream.readWORD();
+    const code = stream.readWORD();
+    const type = GeneratorEnumeratorTable[code];
 
-    switch (t.type) {
+    let value: number | RangeValue;
+    switch (type) {
       case "keyRange":
       case "velRange":
-        t.value = RangeValue.parse(stream);
+        value = RangeValue.parse(stream);
         break;
       default:
-        t.value = stream.readInt16();
+        value = stream.readInt16();
         break;
     }
 
-    return t;
+    return new GeneratorList(code, value);
   }
 }
 
@@ -215,40 +247,52 @@ export class Instrument {
 }
 
 export class SampleHeader {
-  sampleName!: string;
-  start!: number;
-  end!: number;
-  loopStart!: number;
-  loopEnd!: number;
-  sampleRate!: number;
-  originalPitch!: number;
-  pitchCorrection!: number;
-  sampleLink!: number;
-  sampleType!: number;
+  constructor(
+    public sampleName: string,
+    public start: number,
+    public end: number,
+    public loopStart: number,
+    public loopEnd: number,
+    public sampleRate: number,
+    public originalPitch: number,
+    public pitchCorrection: number,
+    public sampleLink: number,
+    public sampleType: number,
+  ) {}
 
   get isEnd() {
     return this.sampleName === "EOS";
   }
 
   static parse(stream: Stream, isSF3?: boolean) {
-    const s = new SampleHeader();
-
-    s.sampleName = stream.readString(20);
-    s.start = stream.readDWORD();
-    s.end = stream.readDWORD();
-    s.loopStart = stream.readDWORD();
-    s.loopEnd = stream.readDWORD();
-    s.sampleRate = stream.readDWORD();
-    s.originalPitch = stream.readByte();
-    s.pitchCorrection = stream.readInt8();
-    s.sampleLink = stream.readWORD();
-    s.sampleType = stream.readWORD();
+    const sampleName = stream.readString(20);
+    const start = stream.readDWORD();
+    const end = stream.readDWORD();
+    let loopStart = stream.readDWORD();
+    let loopEnd = stream.readDWORD();
+    const sampleRate = stream.readDWORD();
+    const originalPitch = stream.readByte();
+    const pitchCorrection = stream.readInt8();
+    const sampleLink = stream.readWORD();
+    const sampleType = stream.readWORD();
 
     if (!isSF3) {
-      s.loopStart -= s.start;
-      s.loopEnd -= s.start;
+      loopStart -= start;
+      loopEnd -= start;
     }
-    return s;
+
+    return new SampleHeader(
+      sampleName,
+      start,
+      end,
+      loopStart,
+      loopEnd,
+      sampleRate,
+      originalPitch,
+      pitchCorrection,
+      sampleLink,
+      sampleType,
+    );
   }
 }
 
