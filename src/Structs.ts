@@ -153,7 +153,7 @@ export class ModulatorList {
   constructor(
     public sourceOper: number,
     public destinationOper: number,
-    public value: number | RangeValue,
+    public value: number,
     public amountSourceOper: number,
     public transOper: number,
   ) {}
@@ -175,21 +175,9 @@ export class ModulatorList {
   static parse(stream: Stream) {
     const sourceOper = stream.readWORD();
     const destinationOper = stream.readWORD();
-    const type = GeneratorEnumeratorTable[destinationOper];
-
-    let value: number | RangeValue;
-    switch (type) {
-      case "keyRange":
-      case "velRange":
-        value = RangeValue.parse(stream);
-        break;
-      default:
-        value = stream.readInt16();
-        break;
-    }
+    const value = stream.readInt16();
     const amountSourceOper = stream.readWORD();
     const transOper = stream.readWORD();
-
     return new ModulatorList(
       sourceOper,
       destinationOper,
