@@ -136,7 +136,7 @@ function getChunkList(
   }
 
   // read structure
-  return parseRiff(data, stream.ip, chunk.size - 4, option);
+  return parseRiff(data, stream.offset, chunk.size - 4, option);
 }
 
 function parseInfoList(chunk: Chunk, data: Uint8Array) {
@@ -170,7 +170,7 @@ function parseChunkObjects<T>(
   const stream = new Stream(data, chunk.offset);
   const size = chunk.offset + chunk.size;
 
-  while (stream.ip < size) {
+  while (stream.offset < size) {
     const obj = clazz.parse(stream, isSF3);
     if (terminate && terminate(obj)) {
       break;

@@ -2,13 +2,13 @@ import Stream from "./Stream.ts";
 
 export function parseChunk(
   input: Uint8Array,
-  ip: number,
+  offset: number,
   bigEndian: boolean,
 ): Chunk {
-  const stream = new Stream(input, ip);
+  const stream = new Stream(input, offset);
   const type = stream.readString(4);
   const size = stream.readDWORD(bigEndian);
-  return new Chunk(type, size, stream.ip);
+  return new Chunk(type, size, stream.offset);
 }
 
 export interface Options {
@@ -24,15 +24,15 @@ export function parseRiff(
 ) {
   const chunkList: Chunk[] = [];
   const end = length + index;
-  let ip = index;
+  let offset = index;
 
-  while (ip < end) {
-    const chunk = parseChunk(input, ip, bigEndian);
-    ip = chunk.offset + chunk.size;
+  while (offset < end) {
+    const chunk = parseChunk(input, offset, bigEndian);
+    offset = chunk.offset + chunk.size;
 
     // padding
-    if (padding && ((ip - index) & 1) === 1) {
-      ip++;
+    if (padding && ((offset - index) & 1) === 1) {
+      offset++;
     }
 
     chunkList.push(chunk);
@@ -42,13 +42,9 @@ export function parseRiff(
 }
 
 export class Chunk {
-  type: string;
-  size: number;
-  offset: number;
-
-  constructor(type: string, size: number, offset: number) {
-    this.type = type;
-    this.size = size;
-    this.offset = offset;
-  }
+  constructor(
+    public type: string,
+    public size: number,
+    public offset: number,
+  ) {}
 }
