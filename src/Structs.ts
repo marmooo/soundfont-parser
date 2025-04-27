@@ -158,10 +158,6 @@ export class ModulatorList {
     public transOper: number,
   ) {}
 
-  get type() {
-    return GeneratorNames[this.destinationOper];
-  }
-
   get isEnd() {
     return (
       this.sourceOper === 0 &&
