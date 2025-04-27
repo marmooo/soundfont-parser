@@ -1,4 +1,4 @@
-import { GeneratorEnumeratorTable } from "./Constants.ts";
+import { GeneratorNames } from "./Constants.ts";
 import Stream from "./Stream.ts";
 import { Chunk } from "./RiffParser.ts";
 
@@ -159,7 +159,7 @@ export class ModulatorList {
   ) {}
 
   get type() {
-    return GeneratorEnumeratorTable[this.destinationOper];
+    return GeneratorNames[this.destinationOper];
   }
 
   get isEnd() {
@@ -195,7 +195,7 @@ export class GeneratorList {
   ) {}
 
   get type() {
-    return GeneratorEnumeratorTable[this.code];
+    return GeneratorNames[this.code];
   }
 
   get isEnd() {
@@ -204,7 +204,7 @@ export class GeneratorList {
 
   static parse(stream: Stream) {
     const code = stream.readWORD();
-    const type = GeneratorEnumeratorTable[code];
+    const type = GeneratorNames[code];
 
     let value: number | RangeValue;
     switch (type) {

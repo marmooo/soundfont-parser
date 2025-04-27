@@ -1,4 +1,4 @@
-export const GeneratorEnumeratorTable = [
+export const GeneratorNames = [
   "startAddrsOffset",
   "endAddrsOffset",
   "startloopAddrsOffset",

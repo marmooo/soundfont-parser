@@ -1,10 +1,10 @@
-import { GeneratorEnumeratorTable } from "./Constants.ts";
+import { GeneratorNames } from "./Constants.ts";
 import { BoundedValue, GeneratorList, RangeValue } from "./Structs.ts";
 
-type GeneratorName = typeof GeneratorEnumeratorTable[number];
+type GeneratorName = typeof GeneratorNames[number];
 type GeneratorIndex = number;
 const generatorNameToIndex = new Map<GeneratorName, GeneratorIndex>(
-  GeneratorEnumeratorTable.map((name, i) => [name, i]),
+  GeneratorNames.map((name, i) => [name, i]),
 );
 
 const IndexGeneratorNames = [
@@ -50,7 +50,7 @@ type NonValueGeneratorName =
   | typeof RangeGeneratorNames[number];
 export type ValueGeneratorName = Exclude<GeneratorName, NonValueGeneratorName>;
 
-type GeneratorKey = typeof GeneratorEnumeratorTable[number];
+type GeneratorKey = typeof GeneratorNames[number];
 export type InstrumentAllowedKey = Exclude<GeneratorKey, undefined>;
 type PresetExcludedKey = typeof presetExcludedNames[number];
 type PresetAllowedKey = Exclude<InstrumentAllowedKey, PresetExcludedKey>;
