@@ -43,16 +43,16 @@ const presetExcludedIndices = new Set<number>(
     .map((key) => generatorKeyToIndex.get(key as GeneratorKey)!),
 );
 
+export type InstrumentAllowedKey = Exclude<GeneratorKey, undefined>;
+type PresetExcludedKey = typeof presetExcludedKeys[number];
+type PresetAllowedKey = Exclude<InstrumentAllowedKey, PresetExcludedKey>;
 type NonValueGeneratorKey =
   | typeof SampleGeneratorKeys[number]
   | typeof SubstitutionGeneratorKeys[number]
   | typeof IndexGeneratorKeys[number]
   | typeof RangeGeneratorKeys[number];
-export type ValueGeneratorKey = Exclude<GeneratorKey, NonValueGeneratorKey>;
+export type ValueGeneratorKey = Exclude<InstrumentAllowedKey, NonValueGeneratorKey>;
 
-export type InstrumentAllowedKey = Exclude<GeneratorKey, undefined>;
-type PresetExcludedKey = typeof presetExcludedKeys[number];
-type PresetAllowedKey = Exclude<InstrumentAllowedKey, PresetExcludedKey>;
 export type InstrumentGeneratorParams = {
   [key in InstrumentAllowedKey]: key extends RangeGeneratorKey ? RangeValue
     : BoundedValue;
