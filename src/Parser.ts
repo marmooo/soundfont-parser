@@ -190,9 +190,9 @@ const parseInst = (chunk: Chunk, data: Uint8Array) =>
 const parseIbag = (chunk: Chunk, data: Uint8Array) =>
   parseChunkObjects(chunk, data, "ibag", Bag);
 const parsePmod = (chunk: Chunk, data: Uint8Array) =>
-  parseChunkObjects(chunk, data, "pmod", ModulatorList, (m) => m.isEnd);
+  parseChunkObjects(chunk, data, "pmod", ModulatorList);
 const parseImod = (chunk: Chunk, data: Uint8Array) =>
-  parseChunkObjects(chunk, data, "imod", ModulatorList, (m) => m.isEnd);
+  parseChunkObjects(chunk, data, "imod", ModulatorList);
 const parsePgen = (chunk: Chunk, data: Uint8Array) =>
   parseChunkObjects(chunk, data, "pgen", GeneratorList, (g) => g.isEnd);
 const parseIgen = (chunk: Chunk, data: Uint8Array) =>

@@ -158,16 +158,6 @@ export class ModulatorList {
     public transOper: number,
   ) {}
 
-  get isEnd() {
-    return (
-      this.sourceOper === 0 &&
-      this.destinationOper === 0 &&
-      this.value === 0 &&
-      this.amountSourceOper === 0 &&
-      this.transOper === 0
-    );
-  }
-
   static parse(stream: Stream) {
     const sourceOper = stream.readWORD();
     const destinationOper = stream.readWORD();
