@@ -1,4 +1,4 @@
-import { GeneratorNames } from "./Constants.ts";
+import { GeneratorKeys } from "./Constants.ts";
 import Stream from "./Stream.ts";
 import { Chunk } from "./RiffParser.ts";
 
@@ -191,7 +191,7 @@ export class GeneratorList {
   ) {}
 
   get type() {
-    return GeneratorNames[this.code];
+    return GeneratorKeys[this.code];
   }
 
   get isEnd() {
@@ -200,7 +200,7 @@ export class GeneratorList {
 
   static parse(stream: Stream) {
     const code = stream.readWORD();
-    const type = GeneratorNames[code];
+    const type = GeneratorKeys[code];
 
     let value: number | RangeValue;
     switch (type) {

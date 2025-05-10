@@ -1,4 +1,4 @@
-export const GeneratorNames = [
+export const GeneratorKeys = [
   "startAddrsOffset",
   "endAddrsOffset",
   "startloopAddrsOffset",

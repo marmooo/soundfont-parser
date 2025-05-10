@@ -1,26 +1,26 @@
-import { GeneratorNames } from "./Constants.ts";
+import { GeneratorKeys } from "./Constants.ts";
 import { BoundedValue, GeneratorList, RangeValue } from "./Structs.ts";
 
-type GeneratorName = typeof GeneratorNames[number];
+type GeneratorKey = typeof GeneratorKeys[number];
 type GeneratorIndex = number;
-const generatorNameToIndex = new Map<GeneratorName, GeneratorIndex>(
-  GeneratorNames.map((name, i) => [name, i]),
+const generatorKeyToIndex = new Map<GeneratorKey, GeneratorIndex>(
+  GeneratorKeys.map((key, i) => [key, i]),
 );
 
-const IndexGeneratorNames = [
+const IndexGeneratorKeys = [
   "instrument",
   "sampleID",
 ] as const;
-export const RangeGeneratorNames = [
+export const RangeGeneratorKeys = [
   "keyRange",
   "velRange",
 ] as const;
-export type RangeGeneratorName = typeof RangeGeneratorNames[number];
-const SubstitutionGeneratorNames = [
+export type RangeGeneratorKey = typeof RangeGeneratorKeys[number];
+const SubstitutionGeneratorKeys = [
   "keynum",
   "velocity",
 ] as const;
-const SampleGeneratorNames = [
+const SampleGeneratorKeys = [
   "startAddrsOffset",
   "endAddrsOffset",
   "startloopAddrsOffset",
@@ -33,37 +33,36 @@ const SampleGeneratorNames = [
   "exclusiveClass",
   "overridingRootKey",
 ] as const;
-const presetExcludedNames = [
-  ...SampleGeneratorNames,
-  ...SubstitutionGeneratorNames,
+const presetExcludedKeys = [
+  ...SampleGeneratorKeys,
+  ...SubstitutionGeneratorKeys,
 ] as const;
 
 const presetExcludedIndices = new Set<number>(
-  presetExcludedNames
-    .map((name) => generatorNameToIndex.get(name as GeneratorName)!),
+  presetExcludedKeys
+    .map((key) => generatorKeyToIndex.get(key as GeneratorKey)!),
 );
 
-type NonValueGeneratorName =
-  | typeof SampleGeneratorNames[number]
-  | typeof SubstitutionGeneratorNames[number]
-  | typeof IndexGeneratorNames[number]
-  | typeof RangeGeneratorNames[number];
-export type ValueGeneratorName = Exclude<GeneratorName, NonValueGeneratorName>;
+type NonValueGeneratorKey =
+  | typeof SampleGeneratorKeys[number]
+  | typeof SubstitutionGeneratorKeys[number]
+  | typeof IndexGeneratorKeys[number]
+  | typeof RangeGeneratorKeys[number];
+export type ValueGeneratorKey = Exclude<GeneratorKey, NonValueGeneratorKey>;
 
-type GeneratorKey = typeof GeneratorNames[number];
 export type InstrumentAllowedKey = Exclude<GeneratorKey, undefined>;
-type PresetExcludedKey = typeof presetExcludedNames[number];
+type PresetExcludedKey = typeof presetExcludedKeys[number];
 type PresetAllowedKey = Exclude<InstrumentAllowedKey, PresetExcludedKey>;
 export type InstrumentGeneratorParams = {
-  [key in InstrumentAllowedKey]: key extends RangeGeneratorName ? RangeValue
+  [key in InstrumentAllowedKey]: key extends RangeGeneratorKey ? RangeValue
     : BoundedValue;
 };
 export type PresetGeneratorParams = {
-  [key in PresetAllowedKey]: key extends RangeGeneratorName ? RangeValue
+  [key in PresetAllowedKey]: key extends RangeGeneratorKey ? RangeValue
     : BoundedValue;
 };
 export type InstrumentParams = {
-  [key in InstrumentAllowedKey]: key extends RangeGeneratorName ? RangeValue
+  [key in InstrumentAllowedKey]: key extends RangeGeneratorKey ? RangeValue
     : number;
 };
 
@@ -72,11 +71,11 @@ const fixedGenerators = [
   ["velocity", "velRange"],
 ] as const;
 
-const RangeGeneratorNamesSet = new Set(
-  RangeGeneratorNames as readonly string[],
+const RangeGeneratorKeysSet = new Set(
+  RangeGeneratorKeys as readonly string[],
 );
-export function isRangeGenerator(name: string): name is RangeGeneratorName {
-  return RangeGeneratorNamesSet.has(name as RangeGeneratorName);
+export function isRangeGenerator(key: string): key is RangeGeneratorKey {
+  return RangeGeneratorKeysSet.has(key as RangeGeneratorKey);
 }
 
 export function createPresetGeneratorObject(generators: GeneratorList[]) {
@@ -87,9 +86,9 @@ export function createPresetGeneratorObject(generators: GeneratorList[]) {
     if (type === undefined) continue;
     if (presetExcludedIndices.has(gen.code)) continue;
     if (isRangeGenerator(type)) {
-      result[type as RangeGeneratorName] = gen.value as RangeValue;
+      result[type as RangeGeneratorKey] = gen.value as RangeValue;
     } else {
-      const key = type as Exclude<PresetAllowedKey, RangeGeneratorName>;
+      const key = type as Exclude<PresetAllowedKey, RangeGeneratorKey>;
       const defaultValue = defaultInstrumentZone[key] as BoundedValue;
       result[key] = new BoundedValue(
         defaultValue.min,
@@ -108,9 +107,9 @@ export function createInstrumentGeneratorObject(generators: GeneratorList[]) {
     const type = gen.type;
     if (type === undefined) continue;
     if (isRangeGenerator(type)) {
-      result[type as RangeGeneratorName] = gen.value as RangeValue;
+      result[type as RangeGeneratorKey] = gen.value as RangeValue;
     } else {
-      const key = type as Exclude<InstrumentAllowedKey, RangeGeneratorName>;
+      const key = type as Exclude<InstrumentAllowedKey, RangeGeneratorKey>;
       const defaultValue = defaultInstrumentZone[key] as BoundedValue;
       result[key] = new BoundedValue(
         defaultValue.min,
