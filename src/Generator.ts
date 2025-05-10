@@ -86,7 +86,7 @@ export function createPresetGeneratorObject(generators: GeneratorList[]) {
     if (type === undefined) continue;
     if (presetExcludedIndices.has(gen.code)) continue;
     if (isRangeGenerator(type)) {
-      result[type as RangeGeneratorKey] = gen.value as RangeValue;
+      result[type] = gen.value as RangeValue;
     } else {
       const key = type as Exclude<PresetAllowedKey, RangeGeneratorKey>;
       const defaultValue = defaultInstrumentZone[key] as BoundedValue;
@@ -107,7 +107,7 @@ export function createInstrumentGeneratorObject(generators: GeneratorList[]) {
     const type = gen.type;
     if (type === undefined) continue;
     if (isRangeGenerator(type)) {
-      result[type as RangeGeneratorKey] = gen.value as RangeValue;
+      result[type] = gen.value as RangeValue;
     } else {
       const key = type as Exclude<InstrumentAllowedKey, RangeGeneratorKey>;
       const defaultValue = defaultInstrumentZone[key] as BoundedValue;
