@@ -72,10 +72,11 @@ const fixedGenerators = [
   ["velocity", "velRange"],
 ] as const;
 
-export function isRangeGenerator(
-  name: string,
-): name is typeof RangeGeneratorNames[number] {
-  return (RangeGeneratorNames as readonly string[]).includes(name);
+const RangeGeneratorNamesSet = new Set(
+  RangeGeneratorNames as readonly string[],
+);
+export function isRangeGenerator(name: string): name is RangeGeneratorName {
+  return RangeGeneratorNamesSet.has(name as RangeGeneratorName);
 }
 
 export function createPresetGeneratorObject(generators: GeneratorList[]) {
