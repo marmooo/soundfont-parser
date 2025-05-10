@@ -3,9 +3,10 @@ import { BoundedValue, GeneratorList, RangeValue } from "./Structs.ts";
 
 type GeneratorKey = typeof GeneratorKeys[number];
 type GeneratorIndex = number;
-const generatorKeyToIndex = new Map<GeneratorKey, GeneratorIndex>(
-  GeneratorKeys.map((key, i) => [key, i]),
-);
+const generatorKeyToIndex = new Map<GeneratorKey, GeneratorIndex>();
+for (let i = 0; i < GeneratorKeys.length; i++) {
+  generatorKeyToIndex.set(GeneratorKeys[i], i);
+}
 
 const IndexGeneratorKeys = [
   "instrument",
@@ -38,10 +39,12 @@ const presetExcludedKeys = [
   ...SubstitutionGeneratorKeys,
 ] as const;
 
-const presetExcludedIndices = new Set<number>(
-  presetExcludedKeys
-    .map((key) => generatorKeyToIndex.get(key as GeneratorKey)!),
-);
+const presetExcludedIndices = new Set<number>();
+for (let i = 0; i < presetExcludedKeys.length; i++) {
+  const key = presetExcludedKeys[i] as GeneratorKey;
+  const index = generatorKeyToIndex.get(key);
+  if (index !== undefined) presetExcludedIndices.add(index);
+}
 
 export type InstrumentAllowedKey = Exclude<GeneratorKey, undefined>;
 type PresetExcludedKey = typeof presetExcludedKeys[number];
@@ -51,7 +54,10 @@ type NonValueGeneratorKey =
   | typeof SubstitutionGeneratorKeys[number]
   | typeof IndexGeneratorKeys[number]
   | typeof RangeGeneratorKeys[number];
-export type ValueGeneratorKey = Exclude<InstrumentAllowedKey, NonValueGeneratorKey>;
+export type ValueGeneratorKey = Exclude<
+  InstrumentAllowedKey,
+  NonValueGeneratorKey
+>;
 
 export type InstrumentGeneratorParams = {
   [key in InstrumentAllowedKey]: key extends RangeGeneratorKey ? RangeValue

@@ -207,16 +207,19 @@ function loadSample(
   data: Uint8Array,
   isSF3: boolean,
 ): Uint8Array[] {
-  return sampleHeader.map((header) => {
-    let { start, end } = header;
+  const result: Uint8Array[] = [];
+  for (let i = 0; i < sampleHeader.length; i++) {
+    let { start, end } = sampleHeader[i];
     if (!isSF3) {
       start *= 2;
       end *= 2;
     }
     // TODO: support 24bit sample
-    return new Uint8Array(data.subarray(
+    const slice = new Uint8Array(data.subarray(
       samplingDataOffsetMSB + start,
       samplingDataOffsetMSB + end,
     ));
-  });
+    result.push(slice);
+  }
+  return result;
 }
