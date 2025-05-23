@@ -3,7 +3,7 @@ import {
   createPresetGeneratorObject,
   defaultInstrumentZone,
   InstrumentGeneratorParams,
-  InstrumentParams,
+  GeneratorParams,
   isRangeGenerator,
   PresetGeneratorParams,
 } from "./Generator.ts";
@@ -156,7 +156,7 @@ export class SoundFont {
       );
       return null;
     }
-    const clamped: InstrumentParams = {} as InstrumentParams;
+    const clamped: GeneratorParams = {} as GeneratorParams;
     const keys = Object.keys(gen) as (keyof InstrumentGeneratorParams)[];
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i];

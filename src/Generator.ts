@@ -67,7 +67,7 @@ export type PresetGeneratorParams = {
   [key in PresetAllowedKey]: key extends RangeGeneratorKey ? RangeValue
     : BoundedValue;
 };
-export type InstrumentParams = {
+export type GeneratorParams = {
   [key in InstrumentAllowedKey]: key extends RangeGeneratorKey ? RangeValue
     : number;
 };
