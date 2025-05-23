@@ -200,6 +200,7 @@ const parseIgen = (chunk: Chunk, data: Uint8Array) =>
 const parseShdr = (chunk: Chunk, data: Uint8Array, isSF3: boolean) =>
   parseChunkObjects(chunk, data, "shdr", SampleHeader, (s) => s.isEnd, isSF3);
 
+// TODO: support 24bit sample
 function loadSample(
   sampleHeader: SampleHeader[],
   samplingDataOffsetMSB: number,
@@ -208,18 +209,12 @@ function loadSample(
   isSF3: boolean,
 ): Uint8Array[] {
   const result: Uint8Array[] = [];
+  const factor = isSF3 ? 1 : 2;
   for (let i = 0; i < sampleHeader.length; i++) {
-    let { start, end } = sampleHeader[i];
-    if (!isSF3) {
-      start *= 2;
-      end *= 2;
-    }
-    // TODO: support 24bit sample
-    const slice = new Uint8Array(data.subarray(
-      samplingDataOffsetMSB + start,
-      samplingDataOffsetMSB + end,
-    ));
-    result.push(slice);
+    const { start, end } = sampleHeader[i];
+    const startOffset = samplingDataOffsetMSB + start * factor;
+    const endOffset = samplingDataOffsetMSB + end * factor;
+    result.push(data.subarray(startOffset, endOffset));
   }
   return result;
 }
