@@ -208,13 +208,13 @@ function loadSample(
   data: Uint8Array,
   isSF3: boolean,
 ): Uint8Array[] {
-  const result: Uint8Array[] = [];
+  const result = new Array<Uint8Array>(sampleHeader.length);
   const factor = isSF3 ? 1 : 2;
   for (let i = 0; i < sampleHeader.length; i++) {
     const { start, end } = sampleHeader[i];
     const startOffset = samplingDataOffsetMSB + start * factor;
     const endOffset = samplingDataOffsetMSB + end * factor;
-    result.push(data.subarray(startOffset, endOffset));
+    result[i] = data.subarray(startOffset, endOffset);
   }
   return result;
 }
