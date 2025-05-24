@@ -5,13 +5,25 @@ export default class Stream {
   ) {}
 
   readString(size: number): string {
-    const subArray = this.data.subarray(this.offset, this.offset += size);
-    const str = String.fromCharCode(...Array.from(subArray));
-    const nullLocation = str.indexOf("\u0000");
-    if (nullLocation > 0) {
-      return str.substring(0, nullLocation);
+    const start = this.offset;
+    const end = start + size;
+    const data = this.data;
+    this.offset = end;
+
+    let nul = end;
+    for (let i = start + 1; i < end; i++) {
+      if (data[i] === 0) {
+        nul = i;
+        break;
+      }
     }
-    return str;
+
+    const len = nul - start;
+    const arr = new Array(len);
+    for (let i = 0; i < len; i++) {
+      arr[i] = data[start + i];
+    }
+    return String.fromCharCode(...arr);
   }
 
   readWORD(): number {
