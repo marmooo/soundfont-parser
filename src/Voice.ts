@@ -209,7 +209,7 @@ export class Voice {
       params.reverbEffectsSend = generators.reverbEffectsSend / 1000;
     },
     pan: (params: Partial<VoiceParams>, generators: GeneratorParams) => {
-      params.pan = generators.pan;
+      params.pan = generators.pan / 1000;
     },
     delayModLFO: (
       params: Partial<VoiceParams>,
