@@ -1,4 +1,5 @@
 import { GeneratorKeys } from "./Constants.ts";
+import { ModulatorSource } from "./Modulator.ts";
 import Stream from "./Stream.ts";
 import { Chunk } from "./RiffParser.ts";
 
@@ -151,19 +152,33 @@ export class RangeValue {
 
 export class ModulatorList {
   constructor(
-    public sourceOper: number,
+    public sourceOper: ModulatorSource,
     public destinationOper: number,
     public value: number,
-    public amountSourceOper: number,
+    public amountSourceOper: ModulatorSource,
     public transOper: number,
   ) {}
 
+  transform(inputValue: number): number {
+    const newValue = this.value * inputValue;
+    switch (this.transOper) {
+      case 0:
+        return newValue;
+      case 2:
+        return Math.abs(newValue);
+      default:
+        return newValue;
+    }
+  }
+
   static parse(stream: Stream) {
-    const sourceOper = stream.readWORD();
+    const source = stream.readWORD();
     const destinationOper = stream.readWORD();
     const value = stream.readInt16();
-    const amountSourceOper = stream.readWORD();
+    const amountSource = stream.readWORD();
     const transOper = stream.readWORD();
+    const sourceOper = ModulatorSource.parse(source);
+    const amountSourceOper = ModulatorSource.parse(amountSource);
     return new ModulatorList(
       sourceOper,
       destinationOper,

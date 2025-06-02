@@ -4,7 +4,8 @@ import {
   assertNotEquals,
 } from "jsr:@std/assert";
 import { parse } from "./Parser.ts";
-import { SoundFont, timecentToSecond } from "./SoundFont.ts";
+import { timecentToSecond } from "./Voice.ts";
+import { SoundFont } from "./SoundFont.ts";
 import { createInstrumentGeneratorObject } from "./Generator.ts";
 
 const tolerance = 5e-3;
@@ -37,24 +38,31 @@ Deno.test("should create Instrument Zone", () => {
   const instrumentZone = createInstrumentGeneratorObject(bag[1]);
   assertNotEquals(instrumentZone.sampleID, undefined);
 });
-Deno.test("should create InstrumentKey", () => {
-  const key = soundFont.getInstrumentKey(0, 0, 40, 100)!;
-  assertNotEquals(key, null);
-  assertEquals(key.sampleName, "crash");
+Deno.test("should create Voice", () => {
+  const voice = soundFont.getVoice(0, 0, 40, 100)!;
+  const params = voice.getAllParams(new Float32Array(256));
+  assertNotEquals(params, null);
+  assertEquals(params.sampleName, "crash");
 
-  assertAlmostEquals(key.volAttack, 0.2, tolerance, "volAttack");
-  assertAlmostEquals(key.volDecay, 0.4, tolerance, "volDecay");
-  assertAlmostEquals(key.volRelease, 0.6, tolerance, "volRelease");
+  assertAlmostEquals(params.volAttack, 0.2, tolerance, "volAttack");
+  assertAlmostEquals(params.volDecay, 0.4, tolerance, "volDecay");
+  assertAlmostEquals(params.volRelease, 0.6, tolerance, "volRelease");
 
-  assertAlmostEquals(key.modAttack, 0.2, tolerance, "modAttack");
-  assertAlmostEquals(key.modDecay, 0.4, tolerance, "modDecay");
-  assertAlmostEquals(key.modSustain, 0.5 / 100, tolerance, "modSustain");
-  assertAlmostEquals(key.modRelease, 0.6, tolerance, "modRelease");
-  assertAlmostEquals(key.modEnvToPitch, 1, tolerance, "modEnvToPitch");
-  assertAlmostEquals(key.modEnvToFilterFc, 2, tolerance, "modEnvToFilterFc");
+  assertAlmostEquals(params.modAttack, 0.2, tolerance, "modAttack");
+  assertAlmostEquals(params.modDecay, 0.4, tolerance, "modDecay");
+  assertAlmostEquals(params.modSustain, 0.5 / 100, tolerance, "modSustain");
+  assertAlmostEquals(params.modRelease, 0.6, tolerance, "modRelease");
+  assertAlmostEquals(params.modEnvToPitch, 1, tolerance, "modEnvToPitch");
+  assertAlmostEquals(
+    params.modEnvToFilterFc,
+    2,
+    tolerance,
+    "modEnvToFilterFc",
+  );
 });
 Deno.test("should apply Global Instrument Zone", () => {
-  const key = soundFont.getInstrumentKey(0, 1, 40, 100)!;
-  assertAlmostEquals(key.volAttack, 0.123, tolerance); // global zone value
-  assertAlmostEquals(key.volDecay, 0.345, tolerance); // global zone value
+  const voice = soundFont.getVoice(0, 1, 40, 100)!;
+  const params = voice.getAllParams(new Float32Array(256));
+  assertAlmostEquals(params.volAttack, 0.123, tolerance); // global zone value
+  assertAlmostEquals(params.volDecay, 0.345, tolerance); // global zone value
 });

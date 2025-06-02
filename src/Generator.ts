@@ -84,6 +84,34 @@ export function isRangeGenerator(key: string): key is RangeGeneratorKey {
   return RangeGeneratorKeysSet.has(key as RangeGeneratorKey);
 }
 
+const nonValueGeneratorKeysSet = new Set<string>([
+  ...IndexGeneratorKeys,
+  ...RangeGeneratorKeys,
+  ...SubstitutionGeneratorKeys,
+  ...SampleGeneratorKeys,
+]);
+
+function extractValueGeneratorKeys(): ValueGeneratorKey[] {
+  const result: ValueGeneratorKey[] = [];
+  const length = GeneratorKeys.length;
+  for (let i = 0; i < length; i++) {
+    const key = GeneratorKeys[i];
+    if (key !== undefined && !nonValueGeneratorKeysSet.has(key)) {
+      result.push(key as ValueGeneratorKey);
+    }
+  }
+  return result;
+}
+
+export const ValueGeneratorKeys: readonly ValueGeneratorKey[] =
+  extractValueGeneratorKeys();
+const ValueGeneratorKeysSet = new Set(
+  ValueGeneratorKeys as readonly string[],
+);
+export function isValueGenerator(key: string): key is ValueGeneratorKey {
+  return ValueGeneratorKeysSet.has(key as ValueGeneratorKey);
+}
+
 export function createPresetGeneratorObject(generators: GeneratorList[]) {
   const result: Partial<PresetGeneratorParams> = {};
   for (let i = 0; i < generators.length; i++) {
