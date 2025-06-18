@@ -100,9 +100,7 @@ export class Voice {
       const amountSource = modulator.amountSourceOper;
       if (!(amountSource.cc === 0 && amountSource.index === 0)) {
         const amount = controllerState[amountSource.controllerType];
-        if (amount !== undefined) {
-          secondary = amountSource.map(amount);
-        }
+        secondary = amountSource.map(amount);
       }
       const generatorValue = this.generators[generatorKey] +
         modulator.transform(primary * secondary);
@@ -126,9 +124,7 @@ export class Voice {
       const amountSource = modulator.amountSourceOper;
       if (!(amountSource.cc === 0 && amountSource.index === 0)) {
         const amount = controllerState[amountSource.controllerType];
-        if (amount !== undefined) {
-          secondary = amountSource.map(amount);
-        }
+        secondary = amountSource.map(amount);
       }
       const generatorValue = this.generators[generatorKey] +
         modulator.transform(primary * secondary);
