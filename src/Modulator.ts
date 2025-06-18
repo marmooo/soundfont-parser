@@ -21,14 +21,15 @@ export class ModulatorSource {
   }
 
   map(normalizedValue: number): number {
-    let v = normalizedValue; // [0-1]
+    let v = normalizedValue; // [0, 1]
     // polarity (0: unipolar, 1: bipolar)
     if (this.polarity === 1) {
-      v = (v - 0.5) * 2; // -1 to +1
-    }
-    // direction (0: positive, 1: negative)
-    if (this.direction === 1) {
-      v *= -1;
+      v = (v - 0.5) * 2; // [-1, 1]
+      if (this.direction === 1) {
+        v *= -1;
+      }
+    } else if (this.direction === 1) {
+      v = 1 - v;
     }
     switch (this.type) {
       case 0: // linear
