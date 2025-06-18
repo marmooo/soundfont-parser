@@ -8,7 +8,7 @@ export class ModulatorSource {
   ) {}
 
   get controllerType() {
-    return this.cc << 8 | this.index;
+    return this.cc << 7 | this.index;
   }
 
   static parse(sourceOper: number) {
