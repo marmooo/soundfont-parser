@@ -35,13 +35,10 @@ export class ModulatorSource {
       case 0: // linear
         break;
       case 1: // concave
-        v = Math.sqrt(v);
+        v = Math.sign(v) * Math.log(Math.abs(v));
         break;
       case 2: // convex
-        v = v * v;
-        break;
-      case 3: // switch
-        v = v >= 0.5 ? 1 : 0;
+        v = Math.sign(v) * Math.exp(-Math.abs(v));
         break;
       default: // treat as linear
         console.warn(`unexpected type: ${this.type}`);
