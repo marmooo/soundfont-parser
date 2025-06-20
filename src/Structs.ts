@@ -302,15 +302,15 @@ export const SampleLink = {
 export class BoundedValue {
   min: number;
   max: number;
-  value: number;
+  defaultValue: number;
 
-  constructor(min: number, value: number, max: number) {
+  constructor(min: number, defaultValue: number, max: number) {
     this.min = min;
-    this.value = value;
+    this.defaultValue = defaultValue;
     this.max = max;
   }
 
-  clamp(): number {
-    return Math.max(this.min, Math.min(this.value, this.max));
+  clamp(value: number): number {
+    return Math.max(this.min, Math.min(value, this.max));
   }
 }

@@ -61,16 +61,33 @@ export type ValueGeneratorKey = Exclude<
 
 export type InstrumentGeneratorParams = {
   [key in InstrumentAllowedKey]: key extends RangeGeneratorKey ? RangeValue
-    : BoundedValue;
+    : number;
 };
 export type PresetGeneratorParams = {
   [key in PresetAllowedKey]: key extends RangeGeneratorKey ? RangeValue
-    : BoundedValue;
+    : number;
 };
 export type GeneratorParams = {
   [key in InstrumentAllowedKey]: key extends RangeGeneratorKey ? RangeValue
-    : number;
+    : BoundedValue;
 };
+
+export function convertToInstrumentGeneratorParams(
+  input: GeneratorParams,
+): InstrumentGeneratorParams {
+  const output = {} as InstrumentGeneratorParams;
+  const keys = Object.keys(input) as InstrumentAllowedKey[];
+  for (const key of keys) {
+    const value = input[key];
+    if (isRangeGenerator(key)) {
+      output[key] = value as RangeValue;
+    } else {
+      const boundedValue = value as BoundedValue;
+      output[key] = boundedValue.clamp(boundedValue.defaultValue);
+    }
+  }
+  return output;
+}
 
 const fixedGenerators = [
   ["keynum", "keyRange"],
@@ -123,12 +140,7 @@ export function createPresetGeneratorObject(generators: GeneratorList[]) {
       result[type] = gen.value as RangeValue;
     } else {
       const key = type as Exclude<PresetAllowedKey, RangeGeneratorKey>;
-      const defaultValue = defaultInstrumentZone[key] as BoundedValue;
-      result[key] = new BoundedValue(
-        defaultValue.min,
-        gen.value as number,
-        defaultValue.max,
-      );
+      result[key] = gen.value as number;
     }
   }
   return result;
@@ -144,27 +156,21 @@ export function createInstrumentGeneratorObject(generators: GeneratorList[]) {
       result[type] = gen.value as RangeValue;
     } else {
       const key = type as Exclude<InstrumentAllowedKey, RangeGeneratorKey>;
-      const defaultValue = defaultInstrumentZone[key] as BoundedValue;
-      result[key] = new BoundedValue(
-        defaultValue.min,
-        gen.value as number,
-        defaultValue.max,
-      );
+      result[key] = gen.value as number;
     }
   }
   for (let i = 0; i < fixedGenerators.length; i++) {
     const [src, dst] = fixedGenerators[i];
     const v = result[src];
-    if (v instanceof BoundedValue && 0 <= v.value) {
-      result[dst] = new RangeValue(v.value, v.value);
-    }
+    if (v === undefined) continue;
+    result[dst] = new RangeValue(v, v);
   }
   return result;
 }
 
 const int16min = -32768;
 const int16max = 32767;
-export const defaultInstrumentZone: InstrumentGeneratorParams = {
+export const defaultInstrumentZone: GeneratorParams = {
   startAddrsOffset: new BoundedValue(0, 0, int16max),
   endAddrsOffset: new BoundedValue(int16min, 0, 0),
   startloopAddrsOffset: new BoundedValue(int16min, 0, int16max),

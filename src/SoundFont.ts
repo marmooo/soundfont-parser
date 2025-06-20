@@ -1,15 +1,15 @@
 import {
+  convertToInstrumentGeneratorParams,
   createInstrumentGeneratorObject,
   createPresetGeneratorObject,
   defaultInstrumentZone,
-  GeneratorParams,
   InstrumentGeneratorParams,
   isRangeGenerator,
   PresetGeneratorParams,
 } from "./Generator.ts";
 import { Voice } from "./Voice.ts";
 import { ParseResult } from "./Parser.ts";
-import { Bag, BoundedValue, GeneratorList, ModulatorList } from "./Structs.ts";
+import { Bag, GeneratorList, ModulatorList } from "./Structs.ts";
 import { DefaultModulators } from "./DefaultModulators.ts";
 
 class InstrumentZone {
@@ -157,7 +157,7 @@ export class SoundFont {
       if (generators.keyRange && !generators.keyRange.in(key)) continue;
       if (generators.velRange && !generators.velRange.in(velocity)) continue;
       const instrumentZone = this.findInstrumentZone(
-        generators.instrument.value,
+        generators.instrument,
         key,
         velocity,
       );
@@ -176,54 +176,40 @@ export class SoundFont {
     return null;
   }
 
-  getGenerators(instrumentGenerators: InstrumentGeneratorParams) {
-    const generators: GeneratorParams = {} as GeneratorParams;
-    const keys = Object.keys(
-      instrumentGenerators,
-    ) as (keyof InstrumentGeneratorParams)[];
-    for (let i = 0; i < keys.length; i++) {
-      const key = keys[i];
-      if (isRangeGenerator(key)) {
-        generators[key] = instrumentGenerators[key];
-      } else {
-        generators[key] = instrumentGenerators[key].clamp();
-      }
-    }
-    return generators;
-  }
-
   createVoice(
     key: number,
     presetZone: PresetZone,
     instrumentZone: InstrumentZone,
   ) {
-    const instrumentGenerators: InstrumentGeneratorParams = {
-      ...defaultInstrumentZone,
-      ...instrumentZone.generators,
-    };
+    const instrumentGenerators = convertToInstrumentGeneratorParams(
+      defaultInstrumentZone,
+    );
+    Object.assign(instrumentGenerators, instrumentZone.generators);
     const keys = Object.keys(
       presetZone.generators,
     ) as (keyof PresetGeneratorParams)[];
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i];
       if (isRangeGenerator(key)) continue;
-      const instrumentValue = instrumentGenerators[key] as BoundedValue;
-      const presetValue = presetZone.generators[key];
-      instrumentGenerators[key] = new BoundedValue(
-        instrumentValue.min,
-        instrumentValue.value + (presetValue as BoundedValue).value,
-        instrumentValue.max,
-      );
+      instrumentGenerators[key] = presetZone.generators[key]!;
     }
     const modulators = [
       ...DefaultModulators,
       ...presetZone.modulators,
       ...instrumentZone.modulators,
     ];
-    const generators = this.getGenerators(instrumentGenerators);
-    const sample = this.parsed.samples[generators.sampleID];
-    const sampleHeader = this.parsed.sampleHeaders[generators.sampleID];
-    return new Voice(key, generators, modulators, sample, sampleHeader);
+    const sampleID = defaultInstrumentZone.sampleID.clamp(
+      instrumentGenerators.sampleID,
+    );
+    const sample = this.parsed.samples[sampleID];
+    const sampleHeader = this.parsed.sampleHeaders[sampleID];
+    return new Voice(
+      key,
+      instrumentGenerators,
+      modulators,
+      sample,
+      sampleHeader,
+    );
   }
 
   getVoice(
