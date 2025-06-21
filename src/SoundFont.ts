@@ -198,9 +198,7 @@ export class SoundFont {
       ...presetZone.modulators,
       ...instrumentZone.modulators,
     ];
-    const sampleID = DefaultInstrumentZone.sampleID.clamp(
-      instrumentGenerators.sampleID,
-    );
+    const sampleID = instrumentGenerators.sampleID;
     const sample = this.parsed.samples[sampleID];
     const sampleHeader = this.parsed.sampleHeaders[sampleID];
     return new Voice(
