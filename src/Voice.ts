@@ -87,7 +87,7 @@ export class Voice {
     return Math.pow(Math.pow(2, 1 / 12), (this.key + basePitch) * scaleTuning);
   }
 
-  getGeneratorParams(
+  transformParams(
     controllerType: number,
     controllerValue: number,
     controllerState: Float32Array,
@@ -117,7 +117,7 @@ export class Voice {
     return params;
   }
 
-  getTransformedGeneratorParams(controllerState: Float32Array) {
+  transformAllParams(controllerState: Float32Array) {
     const params = structuredClone(this.generators);
     for (const modulator of this.modulators) {
       const controllerType = modulator.sourceOper.controllerType;
@@ -421,7 +421,7 @@ export class Voice {
   ) {
     const params: Partial<VoiceParams> = {};
     const generators = structuredClone(this.generators);
-    const updatedParams = this.getGeneratorParams(
+    const updatedParams = this.transformParams(
       controllerType,
       controllerValue,
       controllerValues,
@@ -454,7 +454,7 @@ export class Voice {
       sampleModes: this.generators.sampleModes,
       exclusiveClass: this.clamp("exclusiveClass", this.generators),
     };
-    const generators = this.getTransformedGeneratorParams(controllerValues);
+    const generators = this.transformAllParams(controllerValues);
     for (let i = 0; i < ValueGeneratorKeys.length; i++) {
       const generatorKey = ValueGeneratorKeys[i];
       this.voiceHandlers[generatorKey](params, generators);
