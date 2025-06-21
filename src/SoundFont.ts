@@ -191,7 +191,7 @@ export class SoundFont {
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i];
       if (isRangeGenerator(key)) continue;
-      instrumentGenerators[key] = presetZone.generators[key]!;
+      instrumentGenerators[key] += presetZone.generators[key]!;
     }
     const modulators = [
       ...DefaultModulators,
