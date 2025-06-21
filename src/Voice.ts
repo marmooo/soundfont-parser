@@ -1,6 +1,8 @@
 import {
+  defaultInstrumentZone,
   InstrumentGeneratorParams,
   isValueGenerator,
+  NonRangeGeneratorKey,
   ValueGeneratorKey,
   ValueGeneratorKeys,
 } from "./Generator.ts";
@@ -73,12 +75,15 @@ export class Voice {
   }
 
   getPlaybackRate(generators: InstrumentGeneratorParams) {
-    const tune = generators.coarseTune + generators.fineTune / 100;
-    const rootKey = generators.overridingRootKey === -1
+    const coarseTune = this.clamp("coarseTune", generators);
+    const fineTune = this.clamp("fineTune", generators) / 100;
+    const overridingRootKey = this.clamp("overridingRootKey", generators);
+    const scaleTuning = this.clamp("scaleTuning", generators) / 100;
+    const tune = coarseTune + fineTune;
+    const rootKey = overridingRootKey === -1
       ? this.sampleHeader.originalPitch
-      : generators.overridingRootKey;
+      : overridingRootKey;
     const basePitch = tune + this.sampleHeader.pitchCorrection / 100 - rootKey;
-    const scaleTuning = generators.scaleTuning / 100;
     return Math.pow(Math.pow(2, 1 / 12), (this.key + basePitch) * scaleTuning);
   }
 
@@ -102,9 +107,12 @@ export class Voice {
         const amount = controllerState[amountSource.controllerType];
         secondary = amountSource.map(amount);
       }
-      const generatorValue = this.generators[generatorKey] +
-        modulator.transform(primary * secondary);
-      params[generatorKey] = generatorValue;
+      const summingValue = modulator.transform(primary * secondary);
+      if (Number.isNaN(summingValue)) {
+        params[generatorKey] = this.generators[generatorKey];
+      } else {
+        params[generatorKey] = this.generators[generatorKey] + summingValue;
+      }
     }
     return params;
   }
@@ -126,11 +134,21 @@ export class Voice {
         const amount = controllerState[amountSource.controllerType];
         secondary = amountSource.map(amount);
       }
-      const generatorValue = this.generators[generatorKey] +
-        modulator.transform(primary * secondary);
-      params[generatorKey] = generatorValue;
+      const summingValue = modulator.transform(primary * secondary);
+      if (Number.isNaN(summingValue)) {
+        params[generatorKey] = this.generators[generatorKey];
+      } else {
+        params[generatorKey] = this.generators[generatorKey] + summingValue;
+      }
     }
     return params;
+  }
+
+  clamp(
+    key: NonRangeGeneratorKey,
+    generators: InstrumentGeneratorParams,
+  ) {
+    return defaultInstrumentZone[key].clamp(generators[key]);
   }
 
   voiceHandlers: {
@@ -147,195 +165,217 @@ export class Voice {
       params: Partial<VoiceParams>,
       generators: InstrumentGeneratorParams,
     ) => {
-      params.modLfoToPitch = generators.modLfoToPitch;
+      params.modLfoToPitch = this.clamp("modLfoToPitch", generators);
     },
     vibLfoToPitch: (
       params: Partial<VoiceParams>,
       generators: InstrumentGeneratorParams,
     ) => {
-      params.vibLfoToPitch = generators.vibLfoToPitch;
+      params.vibLfoToPitch = this.clamp("vibLfoToPitch", generators);
     },
     modEnvToPitch: (
       params: Partial<VoiceParams>,
       generators: InstrumentGeneratorParams,
     ) => {
-      params.modEnvToPitch = generators.modEnvToPitch;
+      params.modEnvToPitch = this.clamp("modEnvToPitch", generators);
     },
     initialFilterFc: (
       params: Partial<VoiceParams>,
       generators: InstrumentGeneratorParams,
     ) => {
-      params.initialFilterFc = generators.initialFilterFc;
+      params.initialFilterFc = this.clamp("initialFilterFc", generators);
     },
     initialFilterQ: (
       params: Partial<VoiceParams>,
       generators: InstrumentGeneratorParams,
     ) => {
-      params.initialFilterQ = generators.initialFilterQ;
+      params.initialFilterQ = this.clamp("initialFilterQ", generators);
     },
     modLfoToFilterFc: (
       params: Partial<VoiceParams>,
       generators: InstrumentGeneratorParams,
     ) => {
-      params.modLfoToFilterFc = generators.modLfoToFilterFc;
+      params.modLfoToFilterFc = this.clamp("modLfoToFilterFc", generators);
     },
     modEnvToFilterFc: (
       params: Partial<VoiceParams>,
       generators: InstrumentGeneratorParams,
     ) => {
-      params.modEnvToFilterFc = generators.modEnvToFilterFc;
+      params.modEnvToFilterFc = this.clamp("modEnvToFilterFc", generators);
     },
     // endAddrsCoarseOffset
     modLfoToVolume: (
       params: Partial<VoiceParams>,
       generators: InstrumentGeneratorParams,
     ) => {
-      params.modLfoToVolume = generators.modLfoToVolume;
+      params.modLfoToVolume = this.clamp("modLfoToVolume", generators);
     },
     chorusEffectsSend: (
       params: Partial<VoiceParams>,
       generators: InstrumentGeneratorParams,
     ) => {
-      params.chorusEffectsSend = generators.chorusEffectsSend / 1000;
+      params.chorusEffectsSend = this.clamp("chorusEffectsSend", generators) /
+        1000;
     },
     reverbEffectsSend: (
       params: Partial<VoiceParams>,
       generators: InstrumentGeneratorParams,
     ) => {
-      params.reverbEffectsSend = generators.reverbEffectsSend / 1000;
+      params.reverbEffectsSend = this.clamp("reverbEffectsSend", generators) /
+        1000;
     },
     pan: (
       params: Partial<VoiceParams>,
       generators: InstrumentGeneratorParams,
     ) => {
-      params.pan = generators.pan / 1000;
+      params.pan = this.clamp("pan", generators) / 1000;
     },
     delayModLFO: (
       params: Partial<VoiceParams>,
       generators: InstrumentGeneratorParams,
     ) => {
-      params.delayModLFO = timecentToSecond(generators.delayModLFO);
+      params.delayModLFO = timecentToSecond(
+        this.clamp("delayModLFO", generators),
+      );
     },
     freqModLFO: (
       params: Partial<VoiceParams>,
       generators: InstrumentGeneratorParams,
     ) => {
-      params.freqModLFO = generators.freqModLFO;
+      params.freqModLFO = this.clamp("freqModLFO", generators);
     },
     delayVibLFO: (
       params: Partial<VoiceParams>,
       generators: InstrumentGeneratorParams,
     ) => {
-      params.delayVibLFO = timecentToSecond(generators.delayVibLFO);
+      params.delayVibLFO = timecentToSecond(
+        this.clamp("delayVibLFO", generators),
+      );
     },
     freqVibLFO: (
       params: Partial<VoiceParams>,
       generators: InstrumentGeneratorParams,
     ) => {
-      params.freqVibLFO = generators.freqVibLFO;
+      params.freqVibLFO = this.clamp("freqVibLFO", generators);
     },
     delayModEnv: (
       params: Partial<VoiceParams>,
       generators: InstrumentGeneratorParams,
     ) => {
-      params.modDelay = timecentToSecond(generators.delayModEnv);
+      params.modDelay = timecentToSecond(this.clamp("delayModEnv", generators));
     },
     attackModEnv: (
       params: Partial<VoiceParams>,
       generators: InstrumentGeneratorParams,
     ) => {
-      params.modAttack = timecentToSecond(generators.attackModEnv);
+      params.modAttack = timecentToSecond(
+        this.clamp("attackModEnv", generators),
+      );
     },
     holdModEnv: (
       params: Partial<VoiceParams>,
       generators: InstrumentGeneratorParams,
     ) => {
-      const { holdModEnv, keynumToModEnvHold } = generators;
+      const holdModEnv = this.clamp("holdModEnv", generators);
+      const keynumToModEnvHold = this.clamp("keynumToModEnvHold", generators);
       params.modHold = this.getModHold(holdModEnv, keynumToModEnvHold);
     },
     decayModEnv: (
       params: Partial<VoiceParams>,
       generators: InstrumentGeneratorParams,
     ) => {
-      const { decayModEnv, keynumToModEnvDecay } = generators;
+      const decayModEnv = this.clamp("decayModEnv", generators);
+      const keynumToModEnvDecay = this.clamp("keynumToModEnvDecay", generators);
       params.modDecay = this.getModDecay(decayModEnv, keynumToModEnvDecay);
     },
     sustainModEnv: (
       params: Partial<VoiceParams>,
       generators: InstrumentGeneratorParams,
     ) => {
-      params.modSustain = generators.sustainModEnv / 1000;
+      params.modSustain = this.clamp("sustainModEnv", generators) / 1000;
     },
     releaseModEnv: (
       params: Partial<VoiceParams>,
       generators: InstrumentGeneratorParams,
     ) => {
-      params.modRelease = timecentToSecond(generators.releaseModEnv);
+      params.modRelease = timecentToSecond(
+        this.clamp("releaseModEnv", generators),
+      );
     },
     keynumToModEnvHold: (
       params: Partial<VoiceParams>,
       generators: InstrumentGeneratorParams,
     ) => {
-      const { holdModEnv, keynumToModEnvHold } = generators;
+      const holdModEnv = this.clamp("holdModEnv", generators);
+      const keynumToModEnvHold = this.clamp("keynumToModEnvHold", generators);
       params.modHold = this.getModHold(holdModEnv, keynumToModEnvHold);
     },
     keynumToModEnvDecay: (
       params: Partial<VoiceParams>,
       generators: InstrumentGeneratorParams,
     ) => {
-      const { decayModEnv, keynumToModEnvDecay } = generators;
+      const decayModEnv = this.clamp("decayModEnv", generators);
+      const keynumToModEnvDecay = this.clamp("keynumToModEnvDecay", generators);
       params.modDecay = this.getModDecay(decayModEnv, keynumToModEnvDecay);
     },
     delayVolEnv: (
       params: Partial<VoiceParams>,
       generators: InstrumentGeneratorParams,
     ) => {
-      params.volDelay = timecentToSecond(generators.delayVolEnv);
+      params.volDelay = timecentToSecond(this.clamp("delayVolEnv", generators));
     },
     attackVolEnv: (
       params: Partial<VoiceParams>,
       generators: InstrumentGeneratorParams,
     ) => {
-      params.volAttack = timecentToSecond(generators.attackVolEnv);
+      params.volAttack = timecentToSecond(
+        this.clamp("attackVolEnv", generators),
+      );
     },
     holdVolEnv: (
       params: Partial<VoiceParams>,
       generators: InstrumentGeneratorParams,
     ) => {
-      const { holdVolEnv, keynumToVolEnvHold } = generators;
+      const holdVolEnv = this.clamp("holdVolEnv", generators);
+      const keynumToVolEnvHold = this.clamp("keynumToVolEnvHold", generators);
       params.volHold = this.getVolHold(holdVolEnv, keynumToVolEnvHold);
     },
     decayVolEnv: (
       params: Partial<VoiceParams>,
       generators: InstrumentGeneratorParams,
     ) => {
-      const { decayVolEnv, keynumToVolEnvDecay } = generators;
+      const decayVolEnv = this.clamp("decayVolEnv", generators);
+      const keynumToVolEnvDecay = this.clamp("keynumToVolEnvDecay", generators);
       params.volDecay = this.getVolDecay(decayVolEnv, keynumToVolEnvDecay);
     },
     sustainVolEnv: (
       params: Partial<VoiceParams>,
       generators: InstrumentGeneratorParams,
     ) => {
-      params.volSustain = generators.sustainVolEnv / 1000;
+      params.volSustain = this.clamp("sustainVolEnv", generators) / 1000;
     },
     releaseVolEnv: (
       params: Partial<VoiceParams>,
       generators: InstrumentGeneratorParams,
     ) => {
-      params.volRelease = timecentToSecond(generators.releaseVolEnv);
+      params.volRelease = timecentToSecond(
+        this.clamp("releaseVolEnv", generators),
+      );
     },
     keynumToVolEnvHold: (
       params: Partial<VoiceParams>,
       generators: InstrumentGeneratorParams,
     ) => {
-      const { holdVolEnv, keynumToVolEnvHold } = generators;
+      const holdVolEnv = this.clamp("holdVolEnv", generators);
+      const keynumToVolEnvHold = this.clamp("keynumToVolEnvHold", generators);
       params.modHold = this.getVolHold(holdVolEnv, keynumToVolEnvHold);
     },
     keynumToVolEnvDecay: (
       params: Partial<VoiceParams>,
       generators: InstrumentGeneratorParams,
     ) => {
-      const { decayVolEnv, keynumToVolEnvDecay } = generators;
+      const decayVolEnv = this.clamp("decayVolEnv", generators);
+      const keynumToVolEnvDecay = this.clamp("keynumToVolEnvDecay", generators);
       params.modDecay = this.getVolDecay(decayVolEnv, keynumToVolEnvDecay);
     },
     // instrument
@@ -348,7 +388,7 @@ export class Voice {
       params: Partial<VoiceParams>,
       generators: InstrumentGeneratorParams,
     ) => {
-      params.initialAttenuation = generators.initialAttenuation;
+      params.initialAttenuation = this.clamp("initialAttenuation", generators);
     },
     // endloopAddrsCoarseOffset
     coarseTune: (
@@ -412,7 +452,7 @@ export class Voice {
       sampleRate: this.sampleHeader.sampleRate,
       sampleName: this.sampleHeader.sampleName,
       sampleModes: this.generators.sampleModes,
-      exclusiveClass: this.generators.exclusiveClass,
+      exclusiveClass: this.clamp("exclusiveClass", this.generators),
     };
     const generators = this.getTransformedGeneratorParams(controllerValues);
     for (let i = 0; i < ValueGeneratorKeys.length; i++) {

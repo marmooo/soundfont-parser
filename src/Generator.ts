@@ -58,6 +58,10 @@ export type ValueGeneratorKey = Exclude<
   InstrumentAllowedKey,
   NonValueGeneratorKey
 >;
+export type NonRangeGeneratorKey = Exclude<
+  InstrumentAllowedKey,
+  RangeGeneratorKey
+>;
 
 export type InstrumentGeneratorParams = {
   [key in InstrumentAllowedKey]: key extends RangeGeneratorKey ? RangeValue
