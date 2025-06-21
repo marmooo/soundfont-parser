@@ -2,7 +2,7 @@ import {
   convertToInstrumentGeneratorParams,
   createInstrumentGeneratorObject,
   createPresetGeneratorObject,
-  defaultInstrumentZone,
+  DefaultInstrumentZone,
   InstrumentGeneratorParams,
   isRangeGenerator,
   PresetGeneratorParams,
@@ -182,7 +182,7 @@ export class SoundFont {
     instrumentZone: InstrumentZone,
   ) {
     const instrumentGenerators = convertToInstrumentGeneratorParams(
-      defaultInstrumentZone,
+      DefaultInstrumentZone,
     );
     Object.assign(instrumentGenerators, instrumentZone.generators);
     const keys = Object.keys(
@@ -198,7 +198,7 @@ export class SoundFont {
       ...presetZone.modulators,
       ...instrumentZone.modulators,
     ];
-    const sampleID = defaultInstrumentZone.sampleID.clamp(
+    const sampleID = DefaultInstrumentZone.sampleID.clamp(
       instrumentGenerators.sampleID,
     );
     const sample = this.parsed.samples[sampleID];

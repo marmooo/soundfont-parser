@@ -174,7 +174,7 @@ export function createInstrumentGeneratorObject(generators: GeneratorList[]) {
 
 const int16min = -32768;
 const int16max = 32767;
-export const defaultInstrumentZone: GeneratorParams = {
+export const DefaultInstrumentZone: GeneratorParams = {
   startAddrsOffset: new BoundedValue(0, 0, int16max),
   endAddrsOffset: new BoundedValue(int16min, 0, 0),
   startloopAddrsOffset: new BoundedValue(int16min, 0, int16max),

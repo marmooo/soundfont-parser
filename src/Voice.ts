@@ -1,5 +1,5 @@
 import {
-  defaultInstrumentZone,
+  DefaultInstrumentZone,
   InstrumentGeneratorParams,
   isValueGenerator,
   NonRangeGeneratorKey,
@@ -148,7 +148,7 @@ export class Voice {
     key: NonRangeGeneratorKey,
     generators: InstrumentGeneratorParams,
   ) {
-    return defaultInstrumentZone[key].clamp(generators[key]);
+    return DefaultInstrumentZone[key].clamp(generators[key]);
   }
 
   voiceHandlers: {
