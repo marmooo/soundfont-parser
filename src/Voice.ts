@@ -14,8 +14,8 @@ export function timecentToSecond(value: number) {
 }
 
 export class Voice {
-  controllerIndex = new Map<number, ModulatorList[]>();
-  generatorIndex = new Map<number, ModulatorList[]>();
+  controllerToDestinations = new Map<number, Set<number>>();
+  destinationToModulators = new Map<number, ModulatorList[]>();
 
   constructor(
     public key: number,
@@ -24,32 +24,33 @@ export class Voice {
     public sample: Uint8Array,
     public sampleHeader: SampleHeader,
   ) {
-    this.setControllerIndex();
-    this.setGeneratorIndex();
+    this.setControllerToDestinations();
+    this.setDestinationToModulators();
   }
 
-  setControllerIndex() {
+  setControllerToDestinations() {
     for (let i = 0; i < this.modulators.length; i++) {
       const modulator = this.modulators[i];
       const controllerType = modulator.sourceOper.controllerType;
-      const list = this.controllerIndex.get(controllerType);
+      const destinationOper = modulator.destinationOper;
+      const list = this.controllerToDestinations.get(controllerType);
       if (list) {
-        list.push(modulator);
+        list.add(modulator.destinationOper);
       } else {
-        this.controllerIndex.set(controllerType, [modulator]);
+        this.controllerToDestinations.set(controllerType, new Set([destinationOper]));
       }
     }
   }
 
-  setGeneratorIndex() {
+  setDestinationToModulators() {
     for (let i = 0; i < this.modulators.length; i++) {
       const modulator = this.modulators[i];
       const generatorKey = modulator.destinationOper;
-      const list = this.generatorIndex.get(generatorKey);
+      const list = this.destinationToModulators.get(generatorKey);
       if (list) {
         list.push(modulator);
       } else {
-        this.generatorIndex.set(generatorKey, [modulator]);
+        this.destinationToModulators.set(generatorKey, [modulator]);
       }
     }
   }
@@ -89,29 +90,30 @@ export class Voice {
 
   transformParams(
     controllerType: number,
-    controllerValue: number,
     controllerState: Float32Array,
   ) {
     const params: Partial<Record<ValueGeneratorKey, number>> = {};
-    const modulators = this.controllerIndex.get(controllerType);
-    if (!modulators) return params;
-    for (const modulator of modulators) {
-      const generatorKey = GeneratorKeys[modulator.destinationOper];
+    const destinations = this.controllerToDestinations.get(controllerType);
+    if (!destinations) return params;
+    for (const destinationOper of destinations) {
+      const generatorKey = GeneratorKeys[destinationOper];
       if (!generatorKey) continue;
       if (!isValueGenerator(generatorKey)) continue;
-      const source = modulator.sourceOper;
-      const primary = source.map(controllerValue);
-      let secondary = 1;
-      const amountSource = modulator.amountSourceOper;
-      if (!(amountSource.cc === 0 && amountSource.index === 0)) {
-        const amount = controllerState[amountSource.controllerType];
-        secondary = amountSource.map(amount);
-      }
-      const summingValue = modulator.transform(primary * secondary);
-      if (Number.isNaN(summingValue)) {
-        params[generatorKey] = this.generators[generatorKey];
-      } else {
-        params[generatorKey] = this.generators[generatorKey] + summingValue;
+      const modulators = this.destinationToModulators.get(destinationOper);
+      if (!modulators) continue;
+      params[generatorKey] = this.generators[generatorKey];
+      for (const modulator of modulators) {
+        const source = modulator.sourceOper;
+        const primary = source.map(controllerState[source.controllerType]);
+        let secondary = 1;
+        const amountSource = modulator.amountSourceOper;
+        if (!(amountSource.cc === 0 && amountSource.index === 0)) {
+          const amount = controllerState[amountSource.controllerType];
+          secondary = amountSource.map(amount);
+        }
+        const summingValue = modulator.transform(primary * secondary);
+        if (Number.isNaN(summingValue)) continue;
+        params[generatorKey] += summingValue;
       }
     }
     return params;
@@ -135,11 +137,8 @@ export class Voice {
         secondary = amountSource.map(amount);
       }
       const summingValue = modulator.transform(primary * secondary);
-      if (Number.isNaN(summingValue)) {
-        params[generatorKey] = this.generators[generatorKey];
-      } else {
-        params[generatorKey] = this.generators[generatorKey] + summingValue;
-      }
+      if (Number.isNaN(summingValue)) continue;
+      params[generatorKey] += summingValue;
     }
     return params;
   }
@@ -414,17 +413,12 @@ export class Voice {
     // overridingRootKey
   } as const;
 
-  getParams(
-    controllerType: number,
-    controllerValue: number,
-    controllerValues: Float32Array,
-  ) {
+  getParams(controllerType: number, controllerState: Float32Array) {
     const params: Partial<VoiceParams> = {};
     const generators = structuredClone(this.generators);
     const updatedParams = this.transformParams(
       controllerType,
-      controllerValue,
-      controllerValues,
+      controllerState,
     );
     const updatedKeys = Object.keys(updatedParams) as ValueGeneratorKey[];
     for (const updatedKey of updatedKeys) {
