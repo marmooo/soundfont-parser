@@ -1,5 +1,5 @@
-import { copySync } from "jsr:@std/fs";
-import { build, emptyDir } from "jsr:@deno/dnt";
+import { copySync } from "@std/fs";
+import { build, emptyDir } from "@deno/dnt";
 
 await emptyDir("./npm");
 

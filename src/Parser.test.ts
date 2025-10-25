@@ -1,5 +1,5 @@
 import { parse } from "./Parser.ts";
-import { assertEquals } from "jsr:@std/assert";
+import { assertEquals } from "@std/assert";
 
 const input = Deno.readFileSync("./fixture/TestSoundFont.sf2");
 const parser = parse(input);
