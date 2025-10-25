@@ -24,27 +24,31 @@ export class AudioData {
 
   decodePCM(data: Uint8Array): Float32Array<ArrayBuffer> {
     const { type } = this;
-    const bytesPerSample = type === "pcm16" ? 2 : 3;
-    const frameCount = Math.floor(data.byteLength / bytesPerSample);
-    const result = new Float32Array(frameCount);
     if (type === "pcm16") {
+      const bytesPerSample = 2;
+      const frameCount = data.byteLength / bytesPerSample;
+      const result = new Float32Array(frameCount);
       const src = new Int16Array(
         data.buffer,
         data.byteOffset,
-        data.byteLength / 2,
+        data.byteLength / bytesPerSample,
       );
       for (let i = 0; i < frameCount; i++) {
         result[i] = src[i] / 32768;
       }
+      return result;
     } else {
+      const bytesPerSample = 3;
+      const frameCount = data.byteLength / bytesPerSample;
+      const result = new Float32Array(frameCount);
       for (let i = 0; i < frameCount; i++) {
-        const idx = i * 3;
+        const idx = i * bytesPerSample;
         let val = data[idx] | (data[idx + 1] << 8) | (data[idx + 2] << 16);
         if (val & 0x800000) val |= 0xff000000;
         result[i] = val / 8388608;
       }
+      return result;
     }
-    return result;
   }
 
   async toAudioBuffer(
