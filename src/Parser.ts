@@ -14,6 +14,7 @@ import {
   SampleHeader,
 } from "./Structs.ts";
 import Stream from "./Stream.ts";
+import { AudioData } from "./AudioData.ts";
 
 export interface ParseResult {
   presetHeaders: PresetHeader[];
@@ -25,7 +26,7 @@ export interface ParseResult {
   instrumentModulators: ModulatorList[];
   instrumentGenerators: GeneratorList[];
   sampleHeaders: SampleHeader[];
-  samples: Uint8Array[];
+  samples: AudioData[];
   samplingData: SamplingData;
   info: Info;
 }
@@ -36,7 +37,7 @@ export interface SamplingData {
 }
 
 export function parse(
-  input: Uint8Array,
+  input: Uint8Array<ArrayBuffer>,
   option: RiffParserOptions = {},
 ): ParseResult {
   // parse RIFF chunk
@@ -105,7 +106,7 @@ export function parse(
 
   return {
     ...result,
-    samples: loadSample(
+    samples: loadSamples(
       result.sampleHeaders,
       result.samplingData.offsetMSB,
       result.samplingData.offsetLSB,
@@ -200,21 +201,22 @@ const parseIgen = (chunk: Chunk, data: Uint8Array) =>
 const parseShdr = (chunk: Chunk, data: Uint8Array, isSF3: boolean) =>
   parseChunkObjects(chunk, data, "shdr", SampleHeader, (s) => s.isEnd, isSF3);
 
-// TODO: support 24bit sample
-function loadSample(
+function loadSamples(
   sampleHeader: SampleHeader[],
   samplingDataOffsetMSB: number,
-  _samplingDataOffsetLSB: number | undefined,
-  data: Uint8Array,
+  samplingDataOffsetLSB: number | undefined,
+  data: Uint8Array<ArrayBuffer>,
   isSF3: boolean,
-): Uint8Array[] {
-  const result = new Array<Uint8Array>(sampleHeader.length);
+): AudioData[] {
+  const result = new Array<AudioData>(sampleHeader.length);
   const factor = isSF3 ? 1 : 2;
+  const type = isSF3 ? "compressed" : samplingDataOffsetLSB ? "pcm24" : "pcm16";
   for (let i = 0; i < sampleHeader.length; i++) {
     const { start, end } = sampleHeader[i];
     const startOffset = samplingDataOffsetMSB + start * factor;
     const endOffset = samplingDataOffsetMSB + end * factor;
-    result[i] = data.subarray(startOffset, endOffset);
+    const sampleData = data.subarray(startOffset, endOffset);
+    result[i] = new AudioData(type, sampleHeader[i], sampleData);
   }
   return result;
 }

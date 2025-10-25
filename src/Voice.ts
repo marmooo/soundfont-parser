@@ -8,6 +8,7 @@ import {
 } from "./Generator.ts";
 import { GeneratorKeys } from "./Constants.ts";
 import { ModulatorList, SampleHeader } from "./Structs.ts";
+import { AudioData } from "./AudioData.ts";
 
 export function timecentToSecond(value: number) {
   return Math.pow(2, value / 1200);
@@ -21,7 +22,7 @@ export class Voice {
     public key: number,
     public generators: InstrumentGeneratorParams,
     public modulators: ModulatorList[],
-    public sample: Uint8Array,
+    public sample: AudioData,
     public sampleHeader: SampleHeader,
   ) {
     this.setControllerToDestinations();
@@ -37,7 +38,10 @@ export class Voice {
       if (list) {
         list.add(modulator.destinationOper);
       } else {
-        this.controllerToDestinations.set(controllerType, new Set([destinationOper]));
+        this.controllerToDestinations.set(
+          controllerType,
+          new Set([destinationOper]),
+        );
       }
     }
   }
@@ -522,7 +526,7 @@ export interface VoiceParams {
   // fineTune: number;
   playbackRate: number;
   // sampleID: number;
-  sample: Uint8Array;
+  sample: AudioData;
   sampleRate: number;
   sampleName: string;
   sampleModes: number;

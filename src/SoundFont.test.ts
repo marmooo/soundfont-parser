@@ -1,8 +1,4 @@
-import {
-  assertAlmostEquals,
-  assertEquals,
-  assertNotEquals,
-} from "@std/assert";
+import { assertAlmostEquals, assertEquals, assertNotEquals } from "@std/assert";
 import { parse } from "./Parser.ts";
 import { timecentToSecond } from "./Voice.ts";
 import { SoundFont } from "./SoundFont.ts";
