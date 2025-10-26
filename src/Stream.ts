@@ -8,21 +8,13 @@ export default class Stream {
     const start = this.offset;
     const end = start + size;
     const data = this.data;
-    this.offset = end;
-
-    let nul = end;
-    for (let i = start; i < end; i++) {
-      if (data[i] === 0) {
-        nul = i;
-        break;
-      }
-    }
-
-    const len = nul - start;
-    const arr = new Array(len);
-    for (let i = 0; i < len; i++) {
+    let nul = data.subarray(start, end).indexOf(0);
+    if (nul < 0) nul = size;
+    const arr = new Array(nul);
+    for (let i = 0; i < nul; i++) {
       arr[i] = data[start + i];
     }
+    this.offset = end;
     return String.fromCharCode(...arr);
   }
 
