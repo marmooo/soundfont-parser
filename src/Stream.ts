@@ -11,7 +11,7 @@ export default class Stream {
     this.offset = end;
 
     let nul = end;
-    for (let i = start + 1; i < end; i++) {
+    for (let i = start; i < end; i++) {
       if (data[i] === 0) {
         nul = i;
         break;
