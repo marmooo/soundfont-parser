@@ -154,13 +154,13 @@ export class ModulatorList {
   constructor(
     public sourceOper: ModulatorSource,
     public destinationOper: number,
-    public value: number,
+    public amount: number,
     public amountSourceOper: ModulatorSource,
     public transOper: number,
   ) {}
 
   transform(inputValue: number): number {
-    const newValue = this.value * inputValue;
+    const newValue = this.amount * inputValue;
     switch (this.transOper) {
       case 0:
         return newValue;
