@@ -446,6 +446,8 @@ export class Voice {
       loopEnd: this.sampleHeader.loopEnd +
         this.generators.endloopAddrsCoarseOffset * 32768 +
         this.generators.endloopAddrsOffset,
+      instrument: this.generators.instrument,
+      sampleID: this.generators.sampleID,
       sample: this.sample,
       sampleRate: this.sampleHeader.sampleRate,
       sampleName: this.sampleHeader.sampleName,
@@ -514,7 +516,7 @@ export interface VoiceParams {
   volRelease: number;
   // keynumToVolEnvHold: number;
   // keynumToVolEnvDecay: number;
-  // instrument: number;
+  instrument: number;
   // keyRange: RangeValue;
   // velRange: RangeValue;
   // startloopAddrsCoarseOffset: number;
@@ -525,7 +527,7 @@ export interface VoiceParams {
   // coarseTune: number;
   // fineTune: number;
   playbackRate: number;
-  // sampleID: number;
+  sampleID: number;
   sample: AudioData;
   sampleRate: number;
   sampleName: string;
