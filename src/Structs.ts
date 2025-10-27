@@ -107,7 +107,9 @@ export class PresetHeader {
   ) {}
 
   get isEnd() {
-    return this.presetName === "EOP";
+    const { presetName, preset, bank, library, genre, morphology } = this;
+    return (presetName === "" || presetName === "EOP") &&
+      (preset + bank + library + genre + morphology === 0);
   }
 
   static parse(stream: Stream) {
