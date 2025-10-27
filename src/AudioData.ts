@@ -7,12 +7,12 @@ const AudioTypesSet = new Set(AudioDataTypes);
 export class AudioData {
   type: AudioDataType;
   sampleHeader: SampleHeader;
-  data: Uint8Array<ArrayBuffer>;
+  data: Uint8Array;
 
   constructor(
     type: AudioDataType,
     sampleHeader: SampleHeader,
-    data: Uint8Array<ArrayBuffer>,
+    data: Uint8Array,
   ) {
     if (!AudioTypesSet.has(type)) {
       throw new Error(`Invalid AudioDataType: ${type}`);
@@ -22,7 +22,7 @@ export class AudioData {
     this.data = data;
   }
 
-  decodePCM(data: Uint8Array): Float32Array<ArrayBuffer> {
+  decodePCM(data: Uint8Array): Float32Array {
     const { type } = this;
     if (type === "pcm16") {
       const bytesPerSample = 2;

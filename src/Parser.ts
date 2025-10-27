@@ -37,7 +37,7 @@ export interface SamplingData {
 }
 
 export function parse(
-  input: Uint8Array<ArrayBuffer>,
+  input: Uint8Array,
   option: RiffParserOptions = {},
 ): ParseResult {
   // parse RIFF chunk
@@ -205,7 +205,7 @@ function loadSamples(
   sampleHeader: SampleHeader[],
   samplingDataOffsetMSB: number,
   samplingDataOffsetLSB: number | undefined,
-  data: Uint8Array<ArrayBuffer>,
+  data: Uint8Array,
   isSF3: boolean,
 ): AudioData[] {
   const result = new Array<AudioData>(sampleHeader.length);
