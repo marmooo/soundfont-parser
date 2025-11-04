@@ -174,6 +174,8 @@ export function createInstrumentGeneratorObject(generators: GeneratorList[]) {
 
 const int16min = -32768;
 const int16max = 32767;
+const uint16min = 0;
+const uint16max = 65535;
 export const DefaultInstrumentZone: GeneratorParams = {
   startAddrsOffset: new BoundedValue(0, 0, int16max),
   endAddrsOffset: new BoundedValue(int16min, 0, 0),
@@ -212,7 +214,7 @@ export const DefaultInstrumentZone: GeneratorParams = {
   releaseVolEnv: new BoundedValue(-12000, -12000, 8000),
   keynumToVolEnvHold: new BoundedValue(-1200, 0, 1200),
   keynumToVolEnvDecay: new BoundedValue(-1200, 0, 1200),
-  instrument: new BoundedValue(-1, -1, int16max),
+  instrument: new BoundedValue(uint16min, uint16max, uint16max),
   keyRange: new RangeValue(0, 127),
   velRange: new RangeValue(0, 127),
   startloopAddrsCoarseOffset: new BoundedValue(int16min, 0, int16max),
@@ -222,7 +224,7 @@ export const DefaultInstrumentZone: GeneratorParams = {
   endloopAddrsCoarseOffset: new BoundedValue(int16min, 0, int16max),
   coarseTune: new BoundedValue(-120, 0, 120),
   fineTune: new BoundedValue(-99, 0, 99),
-  sampleID: new BoundedValue(-1, -1, int16max),
+  sampleID: new BoundedValue(uint16min, uint16max, uint16max),
   sampleModes: new BoundedValue(0, 0, 3),
   scaleTuning: new BoundedValue(0, 100, 100),
   exclusiveClass: new BoundedValue(0, 0, 127),

@@ -215,6 +215,10 @@ export class GeneratorList {
       case "velRange":
         value = RangeValue.parse(stream);
         break;
+      case "instrument":
+      case "sampleID":
+        value = stream.readUInt16();
+        break;
       default:
         value = stream.readInt16();
         break;
