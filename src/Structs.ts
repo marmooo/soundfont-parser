@@ -108,8 +108,8 @@ export class PresetHeader {
 
   get isEnd() {
     const { presetName, preset, bank, library, genre, morphology } = this;
-    return (presetName === "" || presetName === "EOP") &&
-      (preset + bank + library + genre + morphology === 0);
+    return (presetName === "EOP") ||
+      presetName === "" && preset + bank + library + genre + morphology === 0;
   }
 
   static parse(stream: Stream) {
