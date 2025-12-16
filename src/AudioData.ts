@@ -57,8 +57,8 @@ export class AudioData {
     end: number,
   ): Promise<AudioBuffer> {
     if (this.type === "compressed") {
-      const slice = this.data.slice(start, end);
-      return await audioContext.decodeAudioData(slice.buffer);
+      const arrayBuffer = this.data.slice().buffer;
+      return await audioContext.decodeAudioData(arrayBuffer);
     } else {
       const subarray = this.data.subarray(start, end);
       const pcm = this.decodePCM(subarray);
