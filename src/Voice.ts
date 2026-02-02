@@ -80,16 +80,19 @@ export class Voice {
   }
 
   getPlaybackRate(generators: InstrumentGeneratorParams) {
-    const coarseTune = this.clamp("coarseTune", generators);
-    const fineTune = this.clamp("fineTune", generators) / 100;
     const overridingRootKey = this.clamp("overridingRootKey", generators);
-    const scaleTuning = this.clamp("scaleTuning", generators) / 100;
-    const tune = coarseTune + fineTune;
+    const scaleTuning = this.clamp("scaleTuning", generators);
     const rootKey = overridingRootKey === -1
       ? this.sampleHeader.originalPitch
       : overridingRootKey;
-    const basePitch = tune + this.sampleHeader.pitchCorrection / 100 - rootKey;
-    return Math.pow(Math.pow(2, 1 / 12), (this.key + basePitch) * scaleTuning);
+    return Math.pow(2, (this.key - rootKey) * scaleTuning / 1200);
+  }
+
+  getDetune(generators: InstrumentGeneratorParams) {
+    const coarseTune = this.clamp("coarseTune", generators) * 100;
+    const fineTune = this.clamp("fineTune", generators);
+    const pitchCorrection = this.sampleHeader.pitchCorrection;
+    return coarseTune + fineTune + pitchCorrection;
   }
 
   transformParams(
@@ -399,12 +402,14 @@ export class Voice {
       generators: InstrumentGeneratorParams,
     ) => {
       params.playbackRate = this.getPlaybackRate(generators);
+      params.detune = this.getDetune(generators);
     },
     fineTune: (
       params: Partial<VoiceParams>,
       generators: InstrumentGeneratorParams,
     ) => {
       params.playbackRate = this.getPlaybackRate(generators);
+      params.detune = this.getDetune(generators);
     },
     // sampleID
     scaleTuning: (
@@ -527,6 +532,7 @@ export interface VoiceParams {
   // coarseTune: number;
   // fineTune: number;
   playbackRate: number;
+  detune: number;
   sampleID: number;
   sample: AudioData;
   sampleRate: number;
