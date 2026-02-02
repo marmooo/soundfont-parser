@@ -401,14 +401,12 @@ export class Voice {
       params: Partial<VoiceParams>,
       generators: InstrumentGeneratorParams,
     ) => {
-      params.playbackRate = this.getPlaybackRate(generators);
       params.detune = this.getDetune(generators);
     },
     fineTune: (
       params: Partial<VoiceParams>,
       generators: InstrumentGeneratorParams,
     ) => {
-      params.playbackRate = this.getPlaybackRate(generators);
       params.detune = this.getDetune(generators);
     },
     // sampleID
