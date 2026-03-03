@@ -50,25 +50,4 @@ export class AudioData {
       return result;
     }
   }
-
-  async toAudioBuffer(
-    audioContext: AudioContext,
-    start: number,
-    end: number,
-  ): Promise<AudioBuffer> {
-    if (this.type === "compressed") {
-      const arrayBuffer = this.data.slice().buffer;
-      return await audioContext.decodeAudioData(arrayBuffer);
-    } else {
-      const subarray = this.data.subarray(start, end);
-      const pcm = this.decodePCM(subarray);
-      const buffer = new AudioBuffer({
-        numberOfChannels: 1,
-        length: pcm.length,
-        sampleRate: this.sampleHeader.sampleRate,
-      });
-      buffer.getChannelData(0).set(pcm);
-      return buffer;
-    }
-  }
 }
