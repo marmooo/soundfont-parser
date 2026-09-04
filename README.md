@@ -30,4 +30,4 @@ The SoundFont 3 format (SF3) is an unofficial extension of the SoundFont 2
 format (SF2). This library is based on following articles.
 
 - [SoundFont® Technical Specification](https://www.synthfont.com/sfspec24.pdf)
-- [SoundFont3Format](https://github.com/FluidSynth/fluidsynth/wiki/SoundFont3Format)
+- [SoundFont3Format](https://www.fluidsynth.org/wiki/SoundFont3Format)
